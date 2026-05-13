@@ -1,0 +1,327 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply antialiased;
+    font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, sans-serif;
+  }
+
+  /* 自定义滚动条 - 更精致的设计 */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-gray-50 dark:bg-gray-800/50;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+    transition: background 0.2s;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+}
+
+@layer components {
+  /* 编辑器样式 - 更现代的设计 */
+  .editor-textarea {
+    @apply w-full h-full p-6 font-mono text-sm leading-relaxed resize-none 
+           bg-white dark:bg-gray-900/50 text-gray-800 dark:text-gray-200
+           border-none outline-none focus:ring-0
+           selection:bg-primary-100 dark:selection:bg-primary-900/30;
+  }
+
+  /* 预览区Markdown样式 - 个性化现代设计 */
+  .markdown-preview {
+    @apply prose prose-lg dark:prose-invert max-w-none p-8
+           prose-headings:font-bold prose-headings:mt-10 prose-headings:mb-4;
+  }
+
+  /* 标题 - 个性化设计 */
+  .markdown-preview h1,
+  .markdown-preview h2,
+  .markdown-preview h3,
+  .markdown-preview h4,
+  .markdown-preview h5,
+  .markdown-preview h6 {
+    @apply relative;
+  }
+
+  .markdown-preview h1 {
+    @apply text-4xl pb-4 mb-6 text-gray-900 dark:text-gray-100;
+  }
+
+  .markdown-preview h1::before {
+    content: "";
+    @apply absolute left-0 bottom-0 w-full h-1 rounded-full
+           bg-gradient-to-r from-primary-500 via-primary-400 to-transparent;
+  }
+
+  .markdown-preview h2 {
+    @apply text-3xl pb-3 mb-5 text-gray-900 dark:text-gray-100;
+  }
+
+  .markdown-preview h2::before {
+    content: "";
+    @apply absolute left-0 bottom-0 w-24 h-0.5 rounded-full
+           bg-gradient-to-r from-primary-500 to-transparent;
+  }
+
+  .markdown-preview h3 {
+    @apply text-2xl mb-4 text-gray-900 dark:text-gray-100;
+  }
+
+  .markdown-preview h3::before {
+    content: "◆";
+    @apply absolute -left-5 text-primary-500 text-lg;
+  }
+
+  .markdown-preview h4 {
+    @apply text-xl mb-3 text-gray-900 dark:text-gray-100;
+  }
+
+  /* 段落 - 优雅的行间距 */
+  .markdown-preview p {
+    @apply my-5 leading-relaxed text-gray-700 dark:text-gray-300;
+  }
+
+  /* 链接 - 动画下划线 */
+  .markdown-preview a {
+    @apply text-primary-600 dark:text-primary-400 font-medium no-underline
+           relative inline-block transition-all duration-200;
+  }
+
+  .markdown-preview a::after {
+    content: "";
+    @apply absolute left-0 bottom-0 w-0 h-0.5 bg-primary-600 dark:bg-primary-400
+           transition-all duration-300;
+  }
+
+  .markdown-preview a:hover::after {
+    @apply w-full;
+  }
+
+  /* 粗体文本 */
+  .markdown-preview strong {
+    @apply text-gray-900 dark:text-gray-100 font-semibold;
+    background: linear-gradient(
+      120deg,
+      transparent 0%,
+      rgba(59, 130, 246, 0.1) 100%
+    );
+    @apply px-1 py-0.5 rounded;
+  }
+
+  /* 行内代码 - 个性化粉色 */
+  .markdown-preview code {
+    @apply text-sm font-mono px-2 py-1 rounded-md
+           bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20
+           text-pink-600 dark:text-pink-400
+           border border-pink-200 dark:border-pink-800/30;
+  }
+
+  /* 代码块 - 现代化终端风格 */
+  .markdown-preview pre {
+    @apply my-6 p-0 rounded-xl overflow-hidden
+           bg-gradient-to-br from-gray-900 to-gray-800 dark:from-gray-800 dark:to-gray-900
+           border border-gray-700 shadow-lg;
+  }
+
+  .markdown-preview pre code {
+    @apply bg-transparent border-0 text-green-600 dark:text-gray-100
+           p-5 block overflow-x-auto;
+  }
+
+  /* 代码块头部装饰 */
+  .markdown-preview pre::before {
+    content: "";
+    @apply block w-full h-8 bg-gradient-to-r from-gray-800 to-gray-700 dark:from-gray-700 dark:to-gray-600;
+    background-image: radial-gradient(
+        circle at 12px 12px,
+        #ef4444 3px,
+        transparent 3px
+      ),
+      radial-gradient(circle at 20px 12px, #f59e0b 3px, transparent 3px),
+      radial-gradient(circle at 28px 12px, #10b981 3px, transparent 3px);
+    background-repeat: no-repeat;
+    background-position: 12px center, 20px center, 28px center;
+  }
+
+  /* 引用块 - 现代化渐变设计 */
+  .markdown-preview blockquote {
+    @apply my-6 py-4 px-5 rounded-r-xl border-l-4 border-primary-500
+           bg-gradient-to-r from-primary-50 via-primary-50/50 to-transparent
+           dark:from-primary-900/20 dark:via-primary-900/10 dark:to-transparent
+           italic text-gray-700 dark:text-gray-300
+           shadow-sm;
+  }
+
+  .markdown-preview blockquote p {
+    @apply my-0;
+  }
+
+  /* 表格 - 现代化设计 */
+  .markdown-preview table {
+    @apply block overflow-y-auto my-6 rounded-xl
+           border border-gray-200 dark:border-gray-700
+           shadow-sm;
+  }
+
+  .markdown-preview thead {
+    @apply bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900;
+  }
+
+  .markdown-preview th {
+    @apply font-semibold text-gray-900 dark:text-gray-100
+           px-5 py-3 border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .markdown-preview td {
+    @apply px-5 py-3 text-gray-700 dark:text-gray-300
+           border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .markdown-preview tbody tr {
+    @apply transition-colors duration-150;
+  }
+
+  .markdown-preview tbody tr:hover {
+    @apply bg-gray-50 dark:bg-gray-800/50;
+  }
+
+  .markdown-preview tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  /* 图片 - 个性化边框 */
+  .markdown-preview img {
+    @apply rounded-xl shadow-lg border-4 border-white dark:border-gray-700
+           transition-transform duration-300;
+  }
+
+  .markdown-preview img:hover {
+    @apply scale-[1.02] shadow-xl;
+  }
+
+  /* 分割线 - 渐变设计 */
+  .markdown-preview hr {
+    @apply my-10 h-1 rounded-full border-0
+           bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent;
+  }
+
+  /* 无序列表 - 个性化标记 */
+  .markdown-preview ul {
+    @apply list-none pl-0;
+  }
+
+  .markdown-preview ul li {
+    @apply my-2.5 pl-6 relative text-gray-700 dark:text-gray-300;
+  }
+
+  .markdown-preview ul li::before {
+    content: "";
+    @apply absolute left-2 top-3 w-2 h-2 rounded-full
+           bg-gradient-to-br from-primary-500 to-primary-400
+           shadow-sm;
+  }
+
+  /* 有序列表 - 数字圆形标记 */
+  .markdown-preview ol {
+    @apply list-none pl-0;
+    counter-reset: item;
+  }
+
+  .markdown-preview ol li {
+    @apply my-2.5 pl-8 relative text-gray-700 dark:text-gray-300;
+    counter-increment: item;
+  }
+
+  .markdown-preview ol li::before {
+    content: counter(item);
+    @apply absolute left-0 top-0.5 w-6 h-6 rounded-full
+           bg-gradient-to-br from-primary-500 to-primary-400
+           text-white text-xs font-bold
+           flex items-center justify-center
+           shadow-sm;
+  }
+
+  /* 任务列表复选框 */
+  .markdown-preview input[type="checkbox"] {
+    @apply w-5 h-5 mr-2 rounded border-gray-300 dark:border-gray-600
+           text-primary-600 focus:ring-primary-500 cursor-pointer
+           transition-all duration-200;
+  }
+
+  /* 按钮基础样式 - 更精致的设计 */
+  .btn {
+    @apply px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+           flex items-center gap-2 cursor-pointer
+           active:scale-95;
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600
+           text-white shadow-soft hover:shadow-medium
+           hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-600
+           text-gray-700 dark:text-gray-200
+           shadow-sm hover:shadow
+           hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-icon {
+    @apply p-2.5 rounded-lg transition-all duration-200 cursor-pointer
+           hover:bg-gray-100 dark:hover:bg-gray-700/70 
+           text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400
+           hover:shadow-sm active:scale-95;
+  }
+}
+
+/* KaTeX样式适配 */
+.katex-display {
+  @apply my-6 p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900
+         rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto;
+}
+
+/* Mermaid图表容器 */
+.mermaid-container {
+  @apply my-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-soft 
+         border border-gray-200 dark:border-gray-700;
+}
+
+/* Loading动画过渡效果 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+/* 新增动画效果 */
+.slide-enter-active,
+.slide-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.slide-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
+}
