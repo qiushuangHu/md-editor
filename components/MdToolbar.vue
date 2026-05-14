@@ -362,6 +362,9 @@ const handleFileUpload = async (e: Event) => {
   try {
     await editorStore.loadFile(file);
     appStore.fileName = file.name;
+    appStore.fileSize = file.size;
+    appStore.fileLastModified = new Date(file.lastModified);
+    appStore.isFileImported = true;
   } catch (error) {
     console.error("Failed to load file:", error);
     alert("文件加载失败");

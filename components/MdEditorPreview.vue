@@ -38,6 +38,7 @@
     <!-- TOC Sidebar - 更现代的设计 -->
     <div
       v-if="appStore.showToc"
+      ref="tocContainerRef"
       class="w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto shadow-soft"
     >
       <div class="p-5">
@@ -59,12 +60,18 @@
             目录
           </h3>
         </div>
-        <nav class="space-y-1">
+        <nav class="space-y-1" ref="tocNavRef">
           <a
-            v-for="item in toc"
-            :key="item.id"
+            v-for="(item, index) in toc"
+            :key="`toc-${item.id}-${item.level}-${index}`"
             :href="`#${item.id}`"
-            class="block text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20 py-1.5 px-2 rounded-lg transition-all truncate"
+            :data-heading-id="item.id"
+            class="block text-sm py-1.5 px-2 rounded-lg transition-all truncate cursor-pointer"
+            :class="[
+              isHeadingActive(item.id)
+                ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 font-medium'
+                : 'text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20',
+            ]"
             :style="{ paddingLeft: `${(item.level - 1) * 12 + 8}px` }"
             @click.prevent="scrollToHeading(item.id)"
           >
@@ -103,14 +110,14 @@
     <!-- Preview - 更现代的设计 -->
     <div
       v-show="showPreview"
-      class="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
+      class="flex-1 overflow-y-auto overflow-x-auto bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
       ref="previewRef"
-      @scroll="onPreviewScroll"
+      @scroll="onPreviewScrollWithTracking"
     >
       <div class="max-w-8xl mx-auto my-8 px-6">
         <div
           v-if="htmlContent"
-          class="markdown-preview bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-200 dark:border-gray-700 p-8"
+          class="markdown-preview bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-200 dark:border-gray-700 p-8 min-w-fit"
           v-html="htmlContent"
         ></div>
         <div v-else class="flex items-center justify-center h-full">
@@ -149,7 +156,10 @@ const editorStore = useEditorStore();
 
 const editorRef = ref<HTMLTextAreaElement | null>(null);
 const previewRef = ref<HTMLElement | null>(null);
+const tocNavRef = ref<HTMLElement | null>(null);
+const tocContainerRef = ref<HTMLElement | null>(null);
 const isDragging = ref(false);
+const activeHeadingId = ref<string>("");
 
 let isScrolling = false;
 
@@ -236,19 +246,86 @@ const onPreviewScroll = (e: Event) => {
   }, 50);
 };
 
+// 跟踪当前可见的标题
+const updateActiveHeading = () => {
+  const preview = previewRef.value;
+  if (!preview || toc.value.length === 0) return;
+
+  const headings = toc.value;
+  let currentHeadingId = "";
+  let lastVisibleHeadingId = headings[0]?.id || ""; // 记录最后一个在视口上方的标题
+  const threshold = 150; // 距离顶部阈值
+
+  // 找到当前在可视区域内的标题，或在视口上方最近的标题
+  for (let i = 0; i < headings.length; i++) {
+    const heading = headings[i];
+    if (!heading) continue;
+    try {
+      const selector = `#${CSS.escape(heading.id)}`;
+      const element = preview.querySelector(selector);
+      if (element) {
+        const rect = element.getBoundingClientRect();
+        const previewRect = preview.getBoundingClientRect();
+        const relativeTop = rect.top - previewRect.top;
+
+        // 记录最后一个在视口上方或刚进入视口的标题
+        if (relativeTop <= threshold) {
+          lastVisibleHeadingId = heading.id;
+        }
+
+        // 标题在可视区域内
+        if (relativeTop >= 0 && relativeTop <= threshold) {
+          currentHeadingId = heading.id;
+          break; // 找到第一个在可视区域内的标题就停止
+        }
+      }
+    } catch (error) {
+      console.error("Error finding heading:", error);
+    }
+  }
+
+  // 如果没有找到在可视区域内的标题，使用最后一个在视口上方的标题
+  if (!currentHeadingId) {
+    currentHeadingId = lastVisibleHeadingId;
+  }
+
+  // 只在active变化时才更新，避免不必要的滚动
+  if (activeHeadingId.value !== currentHeadingId) {
+    activeHeadingId.value = currentHeadingId;
+    // 滚动目录项到可视区域
+    scrollToTocItem(currentHeadingId);
+  }
+};
+
+// 滚动目录项到可视区域
+const scrollToTocItem = (headingId: string) => {
+  if (!tocContainerRef.value || !headingId) return;
+
+  // 查找当前active的目录项
+  const activeItem = tocNavRef.value?.querySelector(
+    `[data-heading-id="${headingId}"]`
+  );
+  if (!activeItem) return;
+
+  // 使用容器的滚动来确保元素可见
+  activeItem.scrollIntoView({
+    behavior: "smooth",
+    block: "nearest",
+  });
+};
+
+// 判断标题是否处于active状态
+const isHeadingActive = (headingId: string) => {
+  return activeHeadingId.value === headingId;
+};
+
 // 键盘快捷键
 const handleKeydown = (e: KeyboardEvent) => {
   if (e.ctrlKey || e.metaKey) {
     if (e.key === "s") {
       e.preventDefault();
-    } else if (e.key === "z") {
-      e.preventDefault();
-      if (e.shiftKey) {
-        editorStore.redo();
-      } else {
-        editorStore.undo();
-      }
     }
+    // 移除对 Ctrl+Z 的拦截，让浏览器原生处理撤销/重做
   }
 };
 
@@ -318,6 +395,12 @@ const handleDrop = async (e: DragEvent) => {
     console.error("Failed to load file:", error);
     alert("文件加载失败");
   }
+};
+
+// 监听预览滚动，更新 active 状态
+const onPreviewScrollWithTracking = (e: Event) => {
+  onPreviewScroll(e);
+  updateActiveHeading();
 };
 
 // 防抖渲染

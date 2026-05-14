@@ -42,6 +42,7 @@
   .markdown-preview {
     @apply prose prose-lg dark:prose-invert max-w-none p-8
            prose-headings:font-bold prose-headings:mt-10 prose-headings:mb-4;
+    overflow-x: auto;
   }
 
   /* 标题 - 个性化设计 */
@@ -167,11 +168,13 @@
     @apply my-0;
   }
 
-  /* 表格 - 现代化设计 */
+  /* 表格 - 现代化设计，自适应列宽 */
   .markdown-preview table {
-    @apply block overflow-y-auto my-6 rounded-xl
+    @apply w-full my-6 rounded-xl overflow-visible
            border border-gray-200 dark:border-gray-700
            shadow-sm;
+    table-layout: auto;
+    min-width: min-content;
   }
 
   .markdown-preview thead {
@@ -184,8 +187,11 @@
   }
 
   .markdown-preview td {
-    @apply px-5 py-3 text-gray-700 dark:text-gray-300
-           border-b border-gray-200 dark:border-gray-700;
+    @apply px-4 py-3 text-gray-700 dark:text-gray-300
+           border-b border-gray-200 dark:border-gray-700
+           whitespace-normal break-words;
+    min-width: 120px;
+    max-width: 300px;
   }
 
   .markdown-preview tbody tr {
@@ -272,13 +278,6 @@
            hover:-translate-y-0.5 active:translate-y-0;
   }
 
-  .btn-secondary {
-    @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700/70 dark:hover:bg-gray-600
-           text-gray-700 dark:text-gray-200
-           shadow-sm hover:shadow
-           hover:-translate-y-0.5 active:translate-y-0;
-  }
-
   .btn-icon {
     @apply p-2.5 rounded-lg transition-all duration-200 cursor-pointer
            hover:bg-gray-100 dark:hover:bg-gray-700/70 
@@ -287,40 +286,24 @@
   }
 }
 
-/* KaTeX样式适配 */
-.katex-display {
-  @apply my-6 p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-900
-         rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto;
-}
-
-/* Mermaid图表容器 */
-.mermaid-container {
-  @apply my-6 p-6 bg-white dark:bg-gray-800 rounded-xl shadow-soft 
-         border border-gray-200 dark:border-gray-700;
-}
-
-/* Loading动画过渡效果 */
+/* Transition 动画 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;
 }
-
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
 
-/* 新增动画效果 */
 .slide-enter-active,
 .slide-leave-active {
   transition: all 0.3s ease;
 }
-
 .slide-enter-from {
   opacity: 0;
   transform: translateY(-10px);
 }
-
 .slide-leave-to {
   opacity: 0;
   transform: translateY(10px);

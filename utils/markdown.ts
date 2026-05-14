@@ -2,12 +2,13 @@ import MarkdownIt from "markdown-it";
 import hljs from "highlight.js";
 import katex from "katex";
 
-// 生成标题ID的统一函数
-export const generateHeadingId = (text: string): string => {
-  return text
+// 生成标题ID的统一函数（支持处理重复标题）
+export const generateHeadingId = (text: string, index: number = 0): string => {
+  const baseId = text
     .toLowerCase()
     .replace(/[^\w\u4e00-\u9fa5]+/g, "-")
     .replace(/^-|-$/g, "");
+  return index > 0 ? `${baseId}-${index}` : baseId;
 };
 
 // 创建markdown-it实例
@@ -131,13 +132,28 @@ export const createMarkdown = () => {
     }
   );
 
-  // 为标题添加id
+  // 为标题添加id（处理重复标题）
+  const headingCounter: Record<string, number> = {};
   md.renderer.rules.heading_open = (tokens, idx) => {
     const token = tokens[idx];
     const nextToken = tokens[idx + 1];
     if (nextToken && nextToken.type === "inline") {
       const text = nextToken.content;
-      const id = generateHeadingId(text);
+      const baseId = text
+        .toLowerCase()
+        .replace(/[^\w\u4e00-\u9fa5]+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      // 处理重复标题
+      if (!headingCounter[baseId]) {
+        headingCounter[baseId] = 0;
+      }
+      const id =
+        headingCounter[baseId] > 0
+          ? `${baseId}-${headingCounter[baseId]}`
+          : baseId;
+      headingCounter[baseId]++;
+
       token.attrSet("id", id);
     }
     return md.renderer.renderToken(tokens, idx, {});
@@ -156,10 +172,26 @@ export const renderMarkdown = (content: string) => {
 // 提取目录
 export const extractToc = (content: string) => {
   const headings = content.match(/^#{1,6}\s+.+$/gm) || [];
+  const headingCounter: Record<string, number> = {};
+
   return headings.map((heading) => {
     const level = heading.match(/^#+/)?.[0].length || 1;
     const text = heading.replace(/^#+\s+/, "");
-    const id = generateHeadingId(text);
+    const baseId = text
+      .toLowerCase()
+      .replace(/[^\w\u4e00-\u9fa5]+/g, "-")
+      .replace(/^-|-$/g, "");
+
+    // 处理重复标题
+    if (!headingCounter[baseId]) {
+      headingCounter[baseId] = 0;
+    }
+    const id =
+      headingCounter[baseId] > 0
+        ? `${baseId}-${headingCounter[baseId]}`
+        : baseId;
+    headingCounter[baseId]++;
+
     return { level, text, id };
   });
 };

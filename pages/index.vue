@@ -26,9 +26,14 @@
               />
             </svg>
           </div>
-          <div>
+          <div
+            class="relative group"
+            ref="fileInfoRef"
+            @mouseenter="handleFileInfoMouseEnter"
+            @mouseleave="handleFileInfoMouseLeave"
+          >
             <h1
-              class="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent"
+              class="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent cursor-pointer"
             >
               MD Viewer
             </h1>
@@ -36,12 +41,122 @@
               {{ appStore.fileName }}
             </p>
           </div>
+
+          <!-- 文件信息提示框（使用Teleport避免被遮挡） -->
+          <Teleport to="body">
+            <div
+              v-if="appStore.isFileImported && showFileInfo"
+              class="fixed w-72 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 p-4 z-[1001]"
+              :style="fileInfoPosition"
+              @mouseenter="showFileInfo = true"
+              @mouseleave="showFileInfo = false"
+            >
+              <div class="flex items-start gap-3">
+                <!-- 文件图标 -->
+                <div
+                  class="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center flex-shrink-0"
+                >
+                  <svg
+                    class="w-5 h-5 text-primary-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                    />
+                  </svg>
+                </div>
+
+                <!-- 文件信息 -->
+                <div class="flex-1 min-w-0">
+                  <h3
+                    class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate mb-2"
+                  >
+                    {{ appStore.fileName }}
+                  </h3>
+                  <div
+                    class="space-y-1.5 text-xs text-gray-600 dark:text-gray-400"
+                  >
+                    <div class="flex items-center gap-2">
+                      <svg
+                        class="w-3.5 h-3.5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+                        />
+                      </svg>
+                      <span>大小: {{ formatFileSize(appStore.fileSize) }}</span>
+                    </div>
+                    <div
+                      v-if="appStore.fileLastModified"
+                      class="flex items-center gap-2"
+                    >
+                      <svg
+                        class="w-3.5 h-3.5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                        />
+                      </svg>
+                      <span
+                        >修改:
+                        {{ formatDateTime(appStore.fileLastModified) }}</span
+                      >
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <svg
+                        class="w-3.5 h-3.5 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                        />
+                      </svg>
+                      <span
+                        >字符:
+                        {{ editorStore.wordCount.chars.toLocaleString() }}</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </Teleport>
         </div>
       </div>
 
       <div class="flex items-center gap-1">
         <!-- 工具栏 -->
-        <button class="btn-icon" @click="toggleToolbar" title="工具栏">
+        <button
+          class="btn-icon"
+          @click="toggleToolbar"
+          :class="{
+            'bg-primary-50 dark:bg-primary-900/30 text-primary-600':
+              appStore.showToolbar,
+          }"
+          title="工具栏"
+        >
           <svg
             class="w-5 h-5"
             fill="none"
@@ -52,7 +167,7 @@
               stroke-linecap="round"
               stroke-linejoin="round"
               stroke-width="2"
-              d="M4 6h16M4 12h16M4 18h16"
+              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
             />
           </svg>
         </button>
@@ -123,12 +238,15 @@
               />
             </svg>
           </button>
+        </div>
 
-          <!-- 导出菜单 -->
+        <!-- 导出菜单（使用Teleport避免被overflow裁剪） -->
+        <Teleport to="body">
           <Transition name="slide">
             <div
               v-if="showExportMenu"
-              class="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 py-2 z-500"
+              class="fixed w-48 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 py-2 z-[1000]"
+              :style="menuPosition"
             >
               <button
                 @click="exportPdf"
@@ -170,7 +288,7 @@
               </button>
             </div>
           </Transition>
-        </div>
+        </Teleport>
 
         <!-- 主题切换 -->
         <button
@@ -412,9 +530,64 @@ const showExportMenu = ref(false);
 const exportMenuRef = ref<HTMLElement | null>(null);
 const isExportingPdf = ref(false); // PDF导出加载状态
 
+const menuPosition = ref({});
+
+// 文件信息卡片相关
+const showFileInfo = ref(false);
+const fileInfoRef = ref<HTMLElement | null>(null);
+const fileInfoPosition = ref({});
+
+// 显示文件信息卡片
+const handleFileInfoMouseEnter = () => {
+  if (!appStore.isFileImported) return;
+
+  showFileInfo.value = true;
+
+  if (fileInfoRef.value) {
+    const rect = fileInfoRef.value.getBoundingClientRect();
+    fileInfoPosition.value = {
+      left: `${rect.left}px`,
+      top: `${rect.bottom + 8}px`,
+    };
+  }
+};
+
+// 隐藏文件信息卡片
+const handleFileInfoMouseLeave = () => {
+  showFileInfo.value = false;
+};
+
 const toggleExportMenu = () => {
   showExportMenu.value = !showExportMenu.value;
+
+  if (showExportMenu.value && exportMenuRef.value) {
+    const rect = exportMenuRef.value.getBoundingClientRect();
+    menuPosition.value = {
+      right: `${window.innerWidth - rect.right}px`,
+      top: `${rect.bottom + 8}px`,
+    };
+  }
 };
+
+// 点击外部关闭菜单
+const handleClickOutside = (e: MouseEvent) => {
+  if (
+    showExportMenu.value &&
+    exportMenuRef.value &&
+    !exportMenuRef.value.contains(e.target as Node)
+  ) {
+    showExportMenu.value = false;
+  }
+};
+
+onMounted(() => {
+  appStore.applyTheme();
+  document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 
 const formatTime = (date: Date) => {
   const hours = date.getHours().toString().padStart(2, "0");
@@ -422,9 +595,22 @@ const formatTime = (date: Date) => {
   return `${hours}:${minutes}`;
 };
 
-// 初始化 - 应用主题（持久化由pinia-plugin-persistedstate自动处理）
-onMounted(() => {
-  // 应用已加载的主题
-  appStore.applyTheme();
-});
+// 格式化文件大小
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+};
+
+// 格式化日期时间
+const formatDateTime = (date: Date) => {
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, "0");
+  const day = date.getDate().toString().padStart(2, "0");
+  const hours = date.getHours().toString().padStart(2, "0");
+  const minutes = date.getMinutes().toString().padStart(2, "0");
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
 </script>

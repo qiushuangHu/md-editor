@@ -16,6 +16,12 @@ export const useAppStore = defineStore("app", {
     syncScroll: true,
     // 文件名
     fileName: "untitled.md",
+    // 文件大小（字节）
+    fileSize: 0,
+    // 文件最后修改时间
+    fileLastModified: null as Date | null,
+    // 是否从文件导入
+    isFileImported: false,
     // 是否显示TOC
     showToc: false,
     // 是否显示工具栏
