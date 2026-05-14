@@ -38,7 +38,7 @@ export const useAppStore = defineStore("app", {
   actions: {
     // 切换主题
     toggleTheme() {
-      const themes = ["light", "dark", "eye-care"];
+      const themes = ["light", "dark"];
       const currentIndex = themes.indexOf(this.theme);
       this.theme = themes[(currentIndex + 1) % themes.length];
       this.applyTheme();

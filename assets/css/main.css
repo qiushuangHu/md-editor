@@ -123,9 +123,9 @@
   /* 行内代码 - 个性化粉色 */
   .markdown-preview code {
     @apply text-sm font-mono px-2 py-1 rounded-md
-           bg-gradient-to-br from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-800/20
-           text-pink-600 dark:text-pink-400
-           border border-pink-200 dark:border-pink-800/30;
+           bg-gradient-to-br from-pink-50 to-pink-100 dark:from-gray-700/50 dark:to-gray-700/30
+           text-pink-600 dark:text-pink-300
+           border border-pink-200 dark:border-gray-600/50;
   }
 
   /* 代码块 - 现代化终端风格 */
@@ -138,6 +138,70 @@
   .markdown-preview pre code {
     @apply bg-transparent border-0 text-green-600 dark:text-gray-100
            p-5 block overflow-x-auto;
+  }
+
+  /* 代码块暗黑主题下覆盖 highlight.js 样式 */
+  .dark .markdown-preview pre code {
+    color: #e6edf3;
+  }
+
+  .dark .markdown-preview pre .hljs-keyword,
+  .dark .markdown-preview pre .hljs-operator {
+    color: #ff7b72;
+  }
+
+  .dark .markdown-preview pre .hljs-string,
+  .dark .markdown-preview pre .hljs-template-variable,
+  .dark .markdown-preview pre .hljs-variable {
+    color: #a5d6ff;
+  }
+
+  .dark .markdown-preview pre .hljs-comment,
+  .dark .markdown-preview pre .hljs-quote {
+    color: #8b949e;
+  }
+
+  .dark .markdown-preview pre .hljs-number,
+  .dark .markdown-preview pre .hljs-regexp,
+  .dark .markdown-preview pre .hljs-literal {
+    color: #79c0ff;
+  }
+
+  .dark .markdown-preview pre .hljs-function,
+  .dark .markdown-preview pre .hljs-title.function_ {
+    color: #d2a8ff;
+  }
+
+  .dark .markdown-preview pre .hljs-class,
+  .dark .markdown-preview pre .hljs-title.class_ {
+    color: #ffa657;
+  }
+
+  .dark .markdown-preview pre .hljs-built_in,
+  .dark .markdown-preview pre .hljs-builtin-name {
+    color: #ffa657;
+  }
+
+  .dark .markdown-preview pre .hljs-attr,
+  .dark .markdown-preview pre .hljs-attribute {
+    color: #79c0ff;
+  }
+
+  .dark .markdown-preview pre .hljs-symbol,
+  .dark .markdown-preview pre .hljs-bullet {
+    color: #a5d6ff;
+  }
+
+  .dark .markdown-preview pre .hljs-link {
+    color: #58a6ff;
+  }
+
+  .dark .markdown-preview pre .hljs-deletion {
+    color: #ffa198;
+  }
+
+  .dark .markdown-preview pre .hljs-addition {
+    color: #7ee787;
   }
 
   /* 代码块头部装饰 */
@@ -275,6 +339,13 @@
   .btn-primary {
     @apply bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600
            text-white shadow-soft hover:shadow-medium
+           hover:-translate-y-0.5 active:translate-y-0;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600
+           text-gray-700 dark:text-gray-200
+           shadow-sm hover:shadow
            hover:-translate-y-0.5 active:translate-y-0;
   }
 
