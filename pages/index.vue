@@ -4,152 +4,150 @@
   >
     <!-- Header - 更现代的设计 -->
     <header
-      class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 px-6 py-3 flex items-center justify-between shadow-soft"
+      class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-b border-gray-200/50 dark:border-gray-700/50 px-4 py-1 flex items-center justify-between shadow-soft"
     >
-      <div class="flex items-center gap-4">
-        <div class="flex items-center gap-3">
-          <!-- Logo图标 -->
-          <div
-            class="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-sm"
+      <div class="flex items-center gap-3">
+        <!-- Logo图标 -->
+        <div
+          class="w-7 h-7 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-sm"
+        >
+          <svg
+            class="w-4 h-4 text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            <svg
-              class="w-5 h-5 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-          </div>
-          <div
-            class="relative group"
-            ref="fileInfoRef"
-            @mouseenter="handleFileInfoMouseEnter"
-            @mouseleave="handleFileInfoMouseLeave"
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+            />
+          </svg>
+        </div>
+        <div
+          class="relative group"
+          ref="fileInfoRef"
+          @mouseenter="handleFileInfoMouseEnter"
+          @mouseleave="handleFileInfoMouseLeave"
+        >
+          <h1
+            class="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent cursor-pointer"
           >
-            <h1
-              class="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent cursor-pointer"
-            >
-              MD Viewer
-            </h1>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              {{ activeFile?.fileName || "untitled.md" }}
-            </p>
-          </div>
+            MD Viewer
+          </h1>
+          <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+            {{ activeFile?.fileName || "untitled.md" }}
+          </p>
+        </div>
 
-          <!-- 文件信息提示框（使用Teleport避免被遮挡） -->
-          <Teleport to="body">
-            <div
-              v-if="activeFile?.isImported && showFileInfo"
-              class="fixed w-72 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 p-4 z-[1001]"
-              :style="fileInfoPosition"
-              @mouseenter="showFileInfo = true"
-              @mouseleave="showFileInfo = false"
-            >
-              <div class="flex items-start gap-3">
-                <!-- 文件图标 -->
-                <div
-                  class="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center flex-shrink-0"
+        <!-- 文件信息提示框（使用Teleport避免被遮挡） -->
+        <Teleport to="body">
+          <div
+            v-if="activeFile?.isImported && showFileInfo"
+            class="fixed w-72 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 p-4 z-[1001]"
+            :style="fileInfoPosition"
+            @mouseenter="showFileInfo = true"
+            @mouseleave="showFileInfo = false"
+          >
+            <div class="flex items-start gap-3">
+              <!-- 文件图标 -->
+              <div
+                class="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center flex-shrink-0"
+              >
+                <svg
+                  class="w-5 h-5 text-primary-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    class="w-5 h-5 text-primary-600"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                    />
-                  </svg>
-                </div>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+              </div>
 
-                <!-- 文件信息 -->
-                <div class="flex-1 min-w-0">
-                  <h3
-                    class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate mb-2"
-                  >
-                    {{ activeFile?.fileName }}
-                  </h3>
-                  <div
-                    class="space-y-1.5 text-xs text-gray-600 dark:text-gray-400"
-                  >
-                    <div class="flex items-center gap-2">
-                      <svg
-                        class="w-3.5 h-3.5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
-                        />
-                      </svg>
-                      <span
-                        >大小:
-                        {{ formatFileSize(activeFile?.fileSize || 0) }}</span
-                      >
-                    </div>
-                    <div
-                      v-if="activeFile?.lastModified"
-                      class="flex items-center gap-2"
+              <!-- 文件信息 -->
+              <div class="flex-1 min-w-0">
+                <h3
+                  class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate mb-2"
+                >
+                  {{ activeFile?.fileName }}
+                </h3>
+                <div
+                  class="space-y-1.5 text-xs text-gray-600 dark:text-gray-400"
+                >
+                  <div class="flex items-center gap-2">
+                    <svg
+                      class="w-3.5 h-3.5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        class="w-3.5 h-3.5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                        />
-                      </svg>
-                      <span
-                        >修改:
-                        {{ formatDateTime(activeFile?.lastModified) }}</span
-                      >
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <svg
-                        class="w-3.5 h-3.5 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
-                        />
-                      </svg>
-                      <span
-                        >字符:
-                        {{ editorStore.wordCount.chars.toLocaleString() }}</span
-                      >
-                    </div>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+                      />
+                    </svg>
+                    <span
+                      >大小:
+                      {{ formatFileSize(activeFile?.fileSize || 0) }}</span
+                    >
+                  </div>
+                  <div
+                    v-if="activeFile?.lastModified"
+                    class="flex items-center gap-2"
+                  >
+                    <svg
+                      class="w-3.5 h-3.5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span
+                      >修改:
+                      {{ formatDateTime(activeFile?.lastModified) }}</span
+                    >
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <svg
+                      class="w-3.5 h-3.5 text-gray-400"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
+                      />
+                    </svg>
+                    <span
+                      >字符:
+                      {{ editorStore.wordCount.chars.toLocaleString() }}</span
+                    >
                   </div>
                 </div>
               </div>
             </div>
-          </Teleport>
-        </div>
+          </div>
+        </Teleport>
       </div>
 
-      <div class="flex items-center gap-1">
+      <div class="flex items-center gap-0.5">
         <!-- 工具栏 -->
         <button
           class="btn-icon"
@@ -161,7 +159,7 @@
           title="工具栏"
         >
           <svg
-            class="w-5 h-5"
+            class="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -186,7 +184,7 @@
           title="目录"
         >
           <svg
-            class="w-5 h-5"
+            class="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -207,7 +205,7 @@
           :title="`布局: ${appStore.layout}`"
         >
           <svg
-            class="w-5 h-5"
+            class="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -222,13 +220,13 @@
         </button>
 
         <!-- 分割线 -->
-        <div class="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+        <div class="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
 
         <!-- 导出 -->
         <div class="relative" ref="exportMenuRef">
           <button class="btn-icon" @click="toggleExportMenu" title="导出">
             <svg
-              class="w-5 h-5"
+              class="w-4 h-4"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -248,12 +246,12 @@
           <Transition name="slide">
             <div
               v-if="showExportMenu"
-              class="fixed w-48 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 py-2 z-[1000]"
+              class="fixed w-34 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 py-1 z-[1000]"
               :style="menuPosition"
             >
               <button
                 @click="exportPdf"
-                class="w-full px-4 py-2.5 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-3 transition-colors"
+                class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-3 transition-colors"
               >
                 <svg
                   class="w-4 h-4 text-primary-600"
@@ -272,7 +270,7 @@
               </button>
               <button
                 @click="exportHtml"
-                class="w-full px-4 py-2.5 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-3 transition-colors"
+                class="w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center gap-3 transition-colors"
               >
                 <svg
                   class="w-4 h-4 text-primary-600"
@@ -301,7 +299,7 @@
         >
           <svg
             v-if="appStore.theme === 'light'"
-            class="w-5 h-5"
+            class="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -315,7 +313,7 @@
           </svg>
           <svg
             v-else-if="appStore.theme === 'dark'"
-            class="w-5 h-5"
+            class="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -329,7 +327,7 @@
           </svg>
           <svg
             v-else
-            class="w-5 h-5"
+            class="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -396,7 +394,7 @@
 
     <!-- Footer - 更现代的设计 -->
     <footer
-      class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50 px-6 py-2.5 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 shadow-soft"
+      class="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl border-t border-gray-200/50 dark:border-gray-700/50 px-6 py-2 flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 shadow-soft"
     >
       <div class="flex items-center gap-5">
         <div class="flex items-center gap-2">
@@ -471,6 +469,11 @@ import { useAppStore } from "~/stores/app";
 import { useEditorStore } from "~/stores/editor";
 import { renderMarkdown } from "~/utils/markdown";
 import { exportToPdf, exportToHtml } from "~/utils/export";
+import {
+  notifyWarning,
+  notifyError,
+  notifySuccess,
+} from "~/utils/notification";
 
 const appStore = useAppStore();
 const editorStore = useEditorStore();
@@ -505,7 +508,7 @@ const toggleToolbar = () => {
 
 const exportPdf = async () => {
   if (!editorStore.content) {
-    alert("没有可导出的内容");
+    notifyWarning("请先打开或编辑一个 Markdown 文件");
     return;
   }
 
@@ -518,9 +521,10 @@ const exportPdf = async () => {
       currentFile?.fileName.replace(/\.md$/, ".pdf") || "export.pdf";
     // 使用页面中已渲染的预览元素，而不是创建临时容器
     await exportToPdf("", pdfFileName, true);
+    notifySuccess("PDF 文件已成功导出");
   } catch (error) {
     console.error("PDF导出失败:", error);
-    alert("PDF导出失败，请稍后重试");
+    notifyError("PDF导出失败，请稍后重试");
   } finally {
     isExportingPdf.value = false;
   }
@@ -528,7 +532,7 @@ const exportPdf = async () => {
 
 const exportHtml = () => {
   if (!editorStore.content) {
-    alert("没有可导出的内容");
+    notifyWarning("请先打开或编辑一个 Markdown 文件");
     return;
   }
 
@@ -537,6 +541,7 @@ const exportHtml = () => {
   const htmlFileName =
     currentFile?.fileName.replace(/\.md$/, ".html") || "export.html";
   exportToHtml(htmlContent, htmlFileName);
+  notifySuccess("HTML 文件已成功导出");
 };
 
 const showExportMenu = ref(false);

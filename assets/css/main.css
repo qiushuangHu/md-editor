@@ -331,7 +331,7 @@
 
   /* 按钮基础样式 - 更精致的设计 */
   .btn {
-    @apply px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200
+    @apply px-3 py-[6px] rounded-lg text-sm font-medium transition-all duration-200
            flex items-center gap-2 cursor-pointer
            active:scale-95;
   }
@@ -378,4 +378,35 @@
 .slide-leave-to {
   opacity: 0;
   transform: translateY(10px);
+}
+
+/* 通知动画 */
+@keyframes notification-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes notification-slide-out {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(100%) scale(0.95);
+  }
+}
+
+.notification-enter {
+  animation: notification-slide-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.notification-exit {
+  animation: notification-slide-out 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

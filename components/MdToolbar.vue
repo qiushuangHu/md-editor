@@ -1,9 +1,115 @@
 <template>
   <div
-    class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex items-center gap-1 flex-wrap h-[61px]"
+    class="bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 flex items-center gap-1 flex-wrap h-[45px]"
   >
-    <!-- 左侧操作按钮组（preview-only模式下隐藏） -->
-    <template v-if="appStore.layout !== 'preview-only'">
+    <!-- 左侧操作按钮组 -->
+    <!-- 预览模式下的工具 -->
+    <template v-if="appStore.layout === 'preview-only'">
+      <!-- 搜索 -->
+      <button class="btn-icon" @click="toggleSearch" title="搜索 (Ctrl+F)">
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+      </button>
+
+      <!-- 打印 -->
+      <button class="btn-icon" @click="printDocument" title="打印">
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+          />
+        </svg>
+      </button>
+
+      <!-- 全屏查看 -->
+      <button class="btn-icon" @click="toggleFullscreen" title="全屏查看">
+        <svg
+          class="w-4 h-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"
+          />
+        </svg>
+      </button>
+
+      <div class="w-px h-4 bg-gray-300 dark:bg-gray-600 mx-1"></div>
+
+      <!-- 缩放控制 -->
+      <div class="flex items-center gap-1">
+        <button
+          class="btn-icon"
+          @click="zoomOut"
+          :disabled="zoomLevel <= 50"
+          title="缩小"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M20 12H4"
+            />
+          </svg>
+        </button>
+        <span
+          class="text-xs text-gray-600 dark:text-gray-400 min-w-[40px] text-center"
+        >
+          {{ zoomLevel }}%
+        </span>
+        <button
+          class="btn-icon"
+          @click="zoomIn"
+          :disabled="zoomLevel >= 200"
+          title="放大"
+        >
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </button>
+      </div>
+    </template>
+
+    <!-- 编辑模式下的工具按钮组（preview-only模式下隐藏） -->
+    <template v-else>
       <!-- 标题 -->
       <button class="btn-icon" @click="insertHeading(1)" title="一级标题">
         <span class="text-sm font-bold">H1</span>
@@ -231,7 +337,7 @@
       class="hidden"
       @change="handleFileUpload"
     />
-    <button class="btn btn-secondary" @click="openFile" title="打开文件">
+    <button class="btn btn-secondary mr-1" @click="openFile" title="打开文件">
       <svg
         class="w-4 h-4"
         fill="none"
@@ -269,10 +375,70 @@
 <script setup lang="ts">
 import { useEditorStore } from "~/stores/editor";
 import { useAppStore } from "~/stores/app";
+import { notifyInfo, notifyError } from "~/utils/notification";
 
 const editorStore = useEditorStore();
 const appStore = useAppStore();
 const fileInput = ref<HTMLInputElement | null>(null);
+
+// 缩放级别
+const zoomLevel = ref(100);
+
+// 切换搜索
+const toggleSearch = () => {
+  if (!process.client) return;
+
+  // 使用浏览器原生查找功能
+  // 注意：现代浏览器通常不支持直接调用查找对话框
+  // 这里可以提示用户使用 Ctrl+F
+  notifyInfo("请使用 Ctrl+F 或 Cmd+F 进行页面内搜索");
+};
+
+// 打印文档
+const printDocument = () => {
+  if (process.client) {
+    window.print();
+  }
+};
+
+// 切换全屏
+const toggleFullscreen = () => {
+  if (!process.client) return;
+
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+};
+
+// 放大
+const zoomIn = () => {
+  if (zoomLevel.value < 200) {
+    zoomLevel.value += 10;
+    applyZoom();
+  }
+};
+
+// 缩小
+const zoomOut = () => {
+  if (zoomLevel.value > 50) {
+    zoomLevel.value -= 10;
+    applyZoom();
+  }
+};
+
+// 应用缩放
+const applyZoom = () => {
+  if (!process.client) return;
+  const preview = document.querySelector(".markdown-preview");
+  if (preview) {
+    (preview as HTMLElement).style.transform = `scale(${
+      zoomLevel.value / 100
+    })`;
+    (preview as HTMLElement).style.transformOrigin = "top center";
+  }
+};
 
 // 插入标题
 const insertHeading = (level: number) => {
@@ -366,7 +532,7 @@ const handleFileUpload = async (e: Event) => {
     await editorStore.addFile(file);
   } catch (error) {
     console.error("Failed to load file:", error);
-    alert("文件加载失败");
+    notifyError("文件加载失败，请重试");
   }
 
   // 重置input

@@ -150,6 +150,7 @@
 import { useAppStore } from "~/stores/app";
 import { useEditorStore } from "~/stores/editor";
 import { renderMarkdown, extractToc } from "~/utils/markdown";
+import { notifyWarning, notifyError } from "~/utils/notification";
 
 const appStore = useAppStore();
 const editorStore = useEditorStore();
@@ -388,7 +389,7 @@ const handleDrop = async (e: DragEvent) => {
       const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
 
       if (!allowedTypes.includes(fileExt)) {
-        alert(`不支持的文件格式: ${file.name}`);
+        notifyWarning(`不支持的文件格式: ${file.name}`);
         continue;
       }
 
@@ -396,7 +397,7 @@ const handleDrop = async (e: DragEvent) => {
     }
   } catch (error) {
     console.error("Failed to load files:", error);
-    alert("文件加载失败");
+    notifyError("文件加载失败，请重试");
   }
 };
 
