@@ -38,14 +38,14 @@
               MD Viewer
             </h1>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-              {{ appStore.fileName }}
+              {{ activeFile?.fileName || "untitled.md" }}
             </p>
           </div>
 
           <!-- 文件信息提示框（使用Teleport避免被遮挡） -->
           <Teleport to="body">
             <div
-              v-if="appStore.isFileImported && showFileInfo"
+              v-if="activeFile?.isImported && showFileInfo"
               class="fixed w-72 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 p-4 z-[1001]"
               :style="fileInfoPosition"
               @mouseenter="showFileInfo = true"
@@ -76,7 +76,7 @@
                   <h3
                     class="text-sm font-semibold text-gray-800 dark:text-gray-200 truncate mb-2"
                   >
-                    {{ appStore.fileName }}
+                    {{ activeFile?.fileName }}
                   </h3>
                   <div
                     class="space-y-1.5 text-xs text-gray-600 dark:text-gray-400"
@@ -95,10 +95,13 @@
                           d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
                         />
                       </svg>
-                      <span>大小: {{ formatFileSize(appStore.fileSize) }}</span>
+                      <span
+                        >大小:
+                        {{ formatFileSize(activeFile?.fileSize || 0) }}</span
+                      >
                     </div>
                     <div
-                      v-if="appStore.fileLastModified"
+                      v-if="activeFile?.lastModified"
                       class="flex items-center gap-2"
                     >
                       <svg
@@ -116,7 +119,7 @@
                       </svg>
                       <span
                         >修改:
-                        {{ formatDateTime(appStore.fileLastModified) }}</span
+                        {{ formatDateTime(activeFile?.lastModified) }}</span
                       >
                     </div>
                     <div class="flex items-center gap-2">
@@ -348,6 +351,9 @@
       </div>
     </header>
 
+    <!-- Tab 栏 -->
+    <MdTabs />
+
     <!-- Toolbar -->
     <MdToolbar v-if="appStore.showToolbar" />
 
@@ -469,6 +475,9 @@ import { exportToPdf, exportToHtml } from "~/utils/export";
 const appStore = useAppStore();
 const editorStore = useEditorStore();
 
+// 当前激活的文件
+const activeFile = computed(() => editorStore.activeFile);
+
 const themeLabel = computed(() => {
   const labels: Record<string, string> = {
     light: "亮色",
@@ -504,7 +513,9 @@ const exportPdf = async () => {
   showExportMenu.value = false; // 关闭导出菜单
 
   try {
-    const pdfFileName = appStore.fileName.replace(/\.md$/, ".pdf");
+    const currentFile = editorStore.activeFile;
+    const pdfFileName =
+      currentFile?.fileName.replace(/\.md$/, ".pdf") || "export.pdf";
     // 使用页面中已渲染的预览元素，而不是创建临时容器
     await exportToPdf("", pdfFileName, true);
   } catch (error) {
@@ -522,7 +533,9 @@ const exportHtml = () => {
   }
 
   const htmlContent = renderMarkdown(editorStore.content);
-  const htmlFileName = appStore.fileName.replace(/\.md$/, ".html");
+  const currentFile = editorStore.activeFile;
+  const htmlFileName =
+    currentFile?.fileName.replace(/\.md$/, ".html") || "export.html";
   exportToHtml(htmlContent, htmlFileName);
 };
 
@@ -539,7 +552,7 @@ const fileInfoPosition = ref({});
 
 // 显示文件信息卡片
 const handleFileInfoMouseEnter = () => {
-  if (!appStore.isFileImported) return;
+  if (!editorStore.activeFile?.isImported) return;
 
   showFileInfo.value = true;
 
@@ -589,9 +602,12 @@ onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
 
-const formatTime = (date: Date) => {
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
+const formatTime = (date: Date | string | null | undefined) => {
+  if (!date) return "";
+  const dateObj = date instanceof Date ? date : new Date(date);
+  if (isNaN(dateObj.getTime())) return "";
+  const hours = dateObj.getHours().toString().padStart(2, "0");
+  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
   return `${hours}:${minutes}`;
 };
 
@@ -605,12 +621,15 @@ const formatFileSize = (bytes: number) => {
 };
 
 // 格式化日期时间
-const formatDateTime = (date: Date) => {
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, "0");
-  const day = date.getDate().toString().padStart(2, "0");
-  const hours = date.getHours().toString().padStart(2, "0");
-  const minutes = date.getMinutes().toString().padStart(2, "0");
+const formatDateTime = (date: Date | string | null | undefined) => {
+  if (!date) return "";
+  const dateObj = date instanceof Date ? date : new Date(date);
+  if (isNaN(dateObj.getTime())) return "";
+  const year = dateObj.getFullYear();
+  const month = (dateObj.getMonth() + 1).toString().padStart(2, "0");
+  const day = dateObj.getDate().toString().padStart(2, "0");
+  const hours = dateObj.getHours().toString().padStart(2, "0");
+  const minutes = dateObj.getMinutes().toString().padStart(2, "0");
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 </script>

@@ -247,7 +247,7 @@
       </svg>
       <span>打开</span>
     </button>
-    <button class="btn btn-primary" @click="saveFile" title="保存文件">
+    <button class="btn btn-primary" @click="saveCurrentFile" title="保存文件">
       <svg
         class="w-4 h-4"
         fill="none"
@@ -363,11 +363,7 @@ const handleFileUpload = async (e: Event) => {
   if (!file) return;
 
   try {
-    await editorStore.loadFile(file);
-    appStore.fileName = file.name;
-    appStore.fileSize = file.size;
-    appStore.fileLastModified = new Date(file.lastModified);
-    appStore.isFileImported = true;
+    await editorStore.addFile(file);
   } catch (error) {
     console.error("Failed to load file:", error);
     alert("文件加载失败");
@@ -377,14 +373,8 @@ const handleFileUpload = async (e: Event) => {
   input.value = "";
 };
 
-// 保存文件
-const saveFile = () => {
-  const blob = new Blob([editorStore.content], { type: "text/markdown" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = appStore.fileName;
-  a.click();
-  URL.revokeObjectURL(url);
+// 保存当前文件
+const saveCurrentFile = () => {
+  editorStore.saveCurrentFile();
 };
 </script>

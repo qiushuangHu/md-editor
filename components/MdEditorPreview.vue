@@ -95,7 +95,7 @@
       <div class="h-full flex flex-col">
         <textarea
           ref="editorRef"
-          v-model="editorStore.content"
+          :value="editorStore.content"
           class="editor-textarea"
           :style="editorStyle"
           @input="onInput"
@@ -202,8 +202,9 @@ const editorStyle = computed(() => ({
 }));
 
 // 输入处理
-const onInput = () => {
-  editorStore.isDirty = true;
+const onInput = (e: Event) => {
+  const target = e.target as HTMLTextAreaElement;
+  editorStore.setContent(target.value);
 };
 
 // 编辑器滚动
@@ -377,22 +378,24 @@ const handleDrop = async (e: DragEvent) => {
   const files = e.dataTransfer?.files;
   if (!files || files.length === 0) return;
 
-  const file = files[0];
-  if (!file) return;
-
-  const allowedTypes = [".md", ".txt", ".markdown"];
-  const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
-
-  if (!allowedTypes.includes(fileExt)) {
-    alert("仅支持 Markdown 文件 (.md, .txt, .markdown)");
-    return;
-  }
-
   try {
-    await editorStore.loadFile(file);
-    appStore.fileName = file.name;
+    // 支持拖拽多个文件
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file) continue;
+
+      const allowedTypes = [".md", ".txt", ".markdown"];
+      const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
+
+      if (!allowedTypes.includes(fileExt)) {
+        alert(`不支持的文件格式: ${file.name}`);
+        continue;
+      }
+
+      await editorStore.addFile(file);
+    }
   } catch (error) {
-    console.error("Failed to load file:", error);
+    console.error("Failed to load files:", error);
     alert("文件加载失败");
   }
 };

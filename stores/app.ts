@@ -14,14 +14,6 @@ export const useAppStore = defineStore("app", {
     lineHeight: 1.6,
     // 是否同步滚动
     syncScroll: true,
-    // 文件名
-    fileName: "untitled.md",
-    // 文件大小（字节）
-    fileSize: 0,
-    // 文件最后修改时间
-    fileLastModified: null as Date | null,
-    // 是否从文件导入
-    isFileImported: false,
     // 是否显示TOC
     showToc: false,
     // 是否显示工具栏
@@ -33,6 +25,8 @@ export const useAppStore = defineStore("app", {
     isDark: (state) => state.theme === "dark",
     // 是否为护眼模式
     isEyeCare: (state) => state.theme === "eye-care",
+    // 获取当前激活文件的信息（从editorStore获取）
+    // 注意：这个getter只是提供便捷的访问，实际数据在editorStore中
   },
 
   actions: {
@@ -40,7 +34,11 @@ export const useAppStore = defineStore("app", {
     toggleTheme() {
       const themes = ["light", "dark"];
       const currentIndex = themes.indexOf(this.theme);
-      this.theme = themes[(currentIndex + 1) % themes.length];
+      if (currentIndex === -1) {
+        this.theme = "light";
+      } else {
+        this.theme = themes[(currentIndex + 1) % themes.length]!;
+      }
       this.applyTheme();
     },
 
@@ -65,7 +63,11 @@ export const useAppStore = defineStore("app", {
     toggleLayout() {
       const layouts = ["split", "editor-only", "preview-only"];
       const currentIndex = layouts.indexOf(this.layout);
-      this.layout = layouts[(currentIndex + 1) % layouts.length];
+      if (currentIndex === -1) {
+        this.layout = "split";
+      } else {
+        this.layout = layouts[(currentIndex + 1) % layouts.length]!;
+      }
     },
 
     // 切换分栏方向
@@ -88,7 +90,6 @@ export const useAppStore = defineStore("app", {
       "syncScroll",
       "showToc",
       "showToolbar",
-      "fileName",
     ],
   },
 });
