@@ -7,6 +7,8 @@ export const useEditorStore = defineStore("editor", {
     files: [] as MdFile[],
     // 当前激活的文件ID
     activeFileId: "",
+    // 临时内容（用于没有导入文件时的直接输入）
+    tempContent: "",
   }),
 
   getters: {
@@ -18,7 +20,7 @@ export const useEditorStore = defineStore("editor", {
     // 当前文件内容
     content: (state) => {
       const activeFile = state.files.find((f) => f.id === state.activeFileId);
-      return activeFile?.content || "";
+      return activeFile?.content || state.tempContent;
     },
 
     // 是否为空（没有打开任何文件）
@@ -124,29 +126,38 @@ export const useEditorStore = defineStore("editor", {
     closeAllFiles() {
       this.files = [];
       this.activeFileId = "";
+      // 关闭所有文件时，保留 tempContent，让用户可以继续编辑
     },
 
     // 更新当前文件内容（不保存到历史，用于实时输入）
     setContent(content: string) {
       const file = this.activeFile;
-      if (!file) return;
-
-      file.content = content;
-      file.isDirty = true;
+      if (file) {
+        // 有激活的文件，更新文件内容
+        file.content = content;
+        file.isDirty = true;
+      } else {
+        // 没有激活的文件，更新临时内容
+        this.tempContent = content;
+      }
     },
 
     // 更新当前文件内容（保存到历史，用于工具栏插入等操作）
     updateContent(content: string) {
       const file = this.activeFile;
-      if (!file) return;
-
-      file.history.push(file.content);
-      if (file.history.length > file.maxHistory) {
-        file.history.shift();
+      if (file) {
+        // 有激活的文件，保存到历史
+        file.history.push(file.content);
+        if (file.history.length > file.maxHistory) {
+          file.history.shift();
+        }
+        file.redoStack = [];
+        file.content = content;
+        file.isDirty = true;
+      } else {
+        // 没有激活的文件，直接更新临时内容（不保存历史）
+        this.tempContent = content;
       }
-      file.redoStack = [];
-      file.content = content;
-      file.isDirty = true;
     },
 
     // 撤销
@@ -177,25 +188,34 @@ export const useEditorStore = defineStore("editor", {
       if (!textarea) return;
 
       const file = this.activeFile;
-      if (!file) return;
-
       const start = textarea.selectionStart;
       const end = textarea.selectionEnd;
-      const selectedText = file.content.substring(start, end);
 
-      const newText = before + (selectedText || text) + after;
-      file.content =
-        file.content.substring(0, start) +
-        newText +
-        file.content.substring(end);
+      if (file) {
+        // 有激活的文件
+        const selectedText = file.content.substring(start, end);
+        const newText = before + (selectedText || text) + after;
+        file.content =
+          file.content.substring(0, start) +
+          newText +
+          file.content.substring(end);
 
-      // 设置新的光标位置
-      file.cursorPosition = {
-        start: start + before.length,
-        end: start + before.length + (selectedText || text).length,
-      };
+        // 设置新的光标位置
+        file.cursorPosition = {
+          start: start + before.length,
+          end: start + before.length + (selectedText || text).length,
+        };
 
-      file.isDirty = true;
+        file.isDirty = true;
+      } else {
+        // 没有激活的文件，操作临时内容
+        const selectedText = this.tempContent.substring(start, end);
+        const newText = before + (selectedText || text) + after;
+        this.tempContent =
+          this.tempContent.substring(0, start) +
+          newText +
+          this.tempContent.substring(end);
+      }
     },
 
     // 加载文件内容（兼容旧API，用于拖拽上传）
@@ -242,7 +262,7 @@ export const useEditorStore = defineStore("editor", {
   persist: {
     key: "md-viewer-editor",
     storage: typeof window !== "undefined" ? localStorage : undefined,
-    pick: ["files", "activeFileId"],
+    pick: ["files", "activeFileId", "tempContent"],
     // 自定义序列化，处理 Date 对象
     serializer: {
       serialize: (state) => {
