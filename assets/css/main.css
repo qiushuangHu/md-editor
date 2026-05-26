@@ -95,8 +95,8 @@
 
   /* 链接 - 动画下划线 */
   .markdown-preview a {
-    @apply text-primary-600 dark:text-primary-400 font-medium no-underline
-           relative inline-block transition-all duration-200;
+    /* @apply text-primary-600 dark:text-primary-400 font-medium no-underline
+           relative inline-block transition-all duration-200; */
   }
 
   .markdown-preview a::after {
@@ -106,7 +106,7 @@
   }
 
   .markdown-preview a:hover::after {
-    @apply w-full;
+    /* @apply w-full; */
   }
 
   /* 粗体文本 */
@@ -272,7 +272,7 @@
 
   /* 图片 - 个性化边框 */
   .markdown-preview img {
-    @apply rounded-xl shadow-lg border-4 border-white dark:border-gray-700
+    @apply rounded-xl shadow-lg border-4 border-white dark:border-gray-700 inline-block
            transition-transform duration-300;
   }
 

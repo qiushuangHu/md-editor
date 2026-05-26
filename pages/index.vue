@@ -219,6 +219,23 @@
           </svg>
         </button>
 
+        <!-- 思维导图 -->
+        <button class="btn-icon" @click="openMindMap" title="思维导图">
+          <svg
+            class="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+            />
+          </svg>
+        </button>
+
         <!-- 分割线 -->
         <div class="w-px h-4 bg-gray-200 dark:bg-gray-700 mx-1"></div>
 
@@ -462,6 +479,13 @@
       </div>
     </footer>
   </div>
+
+  <!-- 思维导图弹窗 -->
+  <MindMapModal
+    :visible="showMindMap"
+    :content="editorStore.content"
+    @close="showMindMap = false"
+  />
 </template>
 
 <script setup lang="ts">
@@ -545,7 +569,17 @@ const exportHtml = () => {
 };
 
 const showExportMenu = ref(false);
+const showMindMap = ref(false);
 const exportMenuRef = ref<HTMLElement | null>(null);
+
+const openMindMap = () => {
+  if (!editorStore.content) {
+    notifyWarning("请先打开或编辑一个 Markdown 文件");
+    return;
+  }
+  showExportMenu.value = false;
+  showMindMap.value = true;
+};
 const isExportingPdf = ref(false); // PDF导出加载状态
 
 const menuPosition = ref({});
