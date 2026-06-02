@@ -1,7 +1,6 @@
 <template>
   <div
     class="h-full flex relative"
-    :class="layoutClass"
     @drop="handleDrop"
     @dragover="handleDragOver"
     @dragleave="handleDragLeave"
@@ -35,114 +34,123 @@
         </p>
       </div>
     </div>
-    <!-- TOC Sidebar - 更现代的设计 -->
-    <div
-      v-if="appStore.showToc"
-      ref="tocContainerRef"
-      class="w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto shadow-soft"
-    >
-      <div class="p-5">
-        <div class="flex items-center gap-2 mb-4">
-          <svg
-            class="w-5 h-5 text-primary-600"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M4 6h16M4 10h16M4 14h10M4 18h7"
-            />
-          </svg>
-          <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200">
-            目录
-          </h3>
-        </div>
-        <nav class="space-y-1" ref="tocNavRef">
-          <a
-            v-for="(item, index) in toc"
-            :key="`toc-${item.id}-${item.level}-${index}`"
-            :href="`#${item.id}`"
-            :data-heading-id="item.id"
-            class="block text-sm py-1.5 px-2 rounded-lg transition-all truncate cursor-pointer"
-            :class="[
-              isHeadingActive(item.id)
-                ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 font-medium'
-                : 'text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20',
-            ]"
-            :style="{ paddingLeft: `${(item.level - 1) * 12 + 8}px` }"
-            @click.prevent="scrollToHeading(item.id)"
-          >
-            {{ item.text }}
-          </a>
-          <p
-            v-if="toc.length === 0"
-            class="text-sm text-gray-400 italic py-4 text-center"
-          >
-            暂无目录
-          </p>
-        </nav>
-      </div>
-    </div>
 
-    <!-- Editor - 更现代的设计 -->
-    <div
-      v-show="showEditor"
-      class="flex-1 overflow-hidden bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700"
+    <!-- 可拖拽调整面板布局 -->
+    <ResizablePanels
+      :panels="panelConfig"
+      :widths="appStore.panelWidths"
+      @update:widths="onPanelWidthsChange"
     >
-      <div class="h-full flex flex-col">
-        <textarea
-          ref="editorRef"
-          :value="editorStore.content"
-          class="editor-textarea"
-          :style="editorStyle"
-          @input="onInput"
-          @scroll="onEditorScroll"
-          @keydown="handleKeydown"
-          placeholder="在此输入Markdown内容..."
-          spellcheck="false"
-        ></textarea>
-      </div>
-    </div>
-
-    <!-- Preview - 更现代的设计 -->
-    <div
-      v-show="showPreview"
-      class="flex-1 overflow-y-auto overflow-x-auto bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
-      ref="previewRef"
-      @scroll="onPreviewScrollWithTracking"
-    >
-      <div class="max-w-8xl mx-auto my-8 px-6">
+      <template #toc>
+        <!-- TOC Sidebar -->
         <div
-          v-if="htmlContent"
-          class="markdown-preview bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-200 dark:border-gray-700 p-8 min-w-fit"
-          v-html="htmlContent"
-        ></div>
-        <div v-else class="flex items-center justify-center h-full">
-          <div class="text-center text-gray-400">
-            <svg
-              class="w-16 h-16 mx-auto mb-4 opacity-50"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            <p class="text-lg">在左侧输入Markdown内容开始预览</p>
-            <p class="text-sm mt-2 opacity-75">
-              支持实时预览、代码高亮、数学公式等功能
-            </p>
+          ref="tocContainerRef"
+          class="h-full bg-white dark:bg-gray-800 overflow-y-auto shadow-soft"
+        >
+          <div class="p-5">
+            <div class="flex items-center gap-2 mb-4">
+              <svg
+                class="w-5 h-5 text-primary-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 6h16M4 10h16M4 14h10M4 18h7"
+                />
+              </svg>
+              <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200">
+                目录
+              </h3>
+            </div>
+            <nav class="space-y-1" ref="tocNavRef">
+              <a
+                v-for="(item, index) in toc"
+                :key="`toc-${item.id}-${item.level}-${index}`"
+                :href="`#${item.id}`"
+                :data-heading-id="item.id"
+                class="block text-sm py-1.5 px-2 rounded-lg transition-all truncate cursor-pointer"
+                :class="[
+                  isHeadingActive(item.id)
+                    ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/30 font-medium'
+                    : 'text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-primary-50 dark:hover:bg-primary-900/20',
+                ]"
+                :style="{ paddingLeft: `${(item.level - 1) * 12 + 8}px` }"
+                @click.prevent="scrollToHeading(item.id)"
+              >
+                {{ item.text }}
+              </a>
+              <p
+                v-if="toc.length === 0"
+                class="text-sm text-gray-400 italic py-4 text-center"
+              >
+                暂无目录
+              </p>
+            </nav>
           </div>
         </div>
-      </div>
-    </div>
+      </template>
+
+      <template #editor>
+        <!-- Editor -->
+        <div class="h-full overflow-hidden bg-white dark:bg-gray-900">
+          <div class="h-full flex flex-col">
+            <textarea
+              ref="editorRef"
+              :value="editorStore.content"
+              class="editor-textarea"
+              :style="editorStyle"
+              @input="onInput"
+              @scroll="onEditorScroll"
+              @keydown="handleKeydown"
+              placeholder="在此输入Markdown内容..."
+              spellcheck="false"
+            ></textarea>
+          </div>
+        </div>
+      </template>
+
+      <template #preview>
+        <!-- Preview -->
+        <div
+          class="h-full overflow-y-auto overflow-x-auto bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800"
+          ref="previewRef"
+          @scroll="onPreviewScrollWithTracking"
+        >
+          <div class="max-w-8xl mx-auto my-8 px-6">
+            <div
+              v-if="htmlContent"
+              class="markdown-preview bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-200 dark:border-gray-700 p-8 min-w-fit"
+              v-html="htmlContent"
+            ></div>
+            <div v-else class="flex items-center justify-center h-full">
+              <div class="text-center text-gray-400">
+                <svg
+                  class="w-16 h-16 mx-auto mb-4 opacity-50"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <p class="text-lg">在左侧输入Markdown内容开始预览</p>
+                <p class="text-sm mt-2 opacity-75">
+                  支持实时预览、代码高亮、数学公式等功能
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+    </ResizablePanels>
   </div>
 </template>
 
@@ -151,6 +159,7 @@ import { useAppStore } from "~/stores/app";
 import { useEditorStore } from "~/stores/editor";
 import { renderMarkdown, extractToc } from "~/utils/markdown";
 import { notifyWarning, notifyError } from "~/utils/notification";
+import type { PanelConfig } from "./ResizablePanels.vue";
 
 const appStore = useAppStore();
 const editorStore = useEditorStore();
@@ -164,6 +173,37 @@ const activeHeadingId = ref<string>("");
 
 let isScrolling = false;
 
+// 面板配置
+const panelConfig = computed<PanelConfig[]>(() => {
+  const showEditor =
+    appStore.layout === "split" || appStore.layout === "editor-only";
+  const showPreview =
+    appStore.layout === "split" || appStore.layout === "preview-only";
+
+  return [
+    {
+      name: "toc",
+      minWidth: 150,
+      defaultWidth: 300,
+      visible: appStore.showToc,
+    },
+    {
+      name: "editor",
+      minWidth: 200,
+      visible: showEditor,
+    },
+    {
+      name: "preview",
+      minWidth: 200,
+      visible: showPreview,
+    },
+  ];
+});
+
+const onPanelWidthsChange = (widths: number[]) => {
+  appStore.panelWidths = widths;
+};
+
 // 渲染后的HTML
 const htmlContent = computed(() => {
   if (!editorStore.content) return "";
@@ -173,27 +213,6 @@ const htmlContent = computed(() => {
 // 目录
 const toc = computed(() => {
   return extractToc(editorStore.content);
-});
-
-// 布局类
-const layoutClass = computed(() => {
-  if (appStore.layout === "editor-only") {
-    return "flex-row";
-  }
-  if (appStore.layout === "preview-only") {
-    return "flex-row";
-  }
-  return appStore.splitDirection === "horizontal" ? "flex-row" : "flex-col";
-});
-
-// 是否显示编辑器
-const showEditor = computed(() => {
-  return appStore.layout === "split" || appStore.layout === "editor-only";
-});
-
-// 是否显示预览
-const showPreview = computed(() => {
-  return appStore.layout === "split" || appStore.layout === "preview-only";
 });
 
 // 编辑器样式

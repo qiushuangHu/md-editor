@@ -10,6 +10,13 @@ export default defineNuxtConfig({
     "pinia-plugin-persistedstate/nuxt",
   ],
 
+  tailwindcss: {
+    // main.css 已包含 @tailwind 指令，禁用模块自动生成的 CSS 文件避免重复加载
+    exposeConfig: false,
+    viewer: false,
+    cssPath: false,
+  },
+
   app: {
     head: {
       title: "MD Viewer - Markdown阅读器",
@@ -23,7 +30,7 @@ export default defineNuxtConfig({
         },
         { name: "keywords", content: "markdown,阅读器,预览,编辑器,在线工具" },
       ],
-      link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
+      link: [{ rel: "icon", type: "image/svg+xml", href: "/favicon.svg" }],
     },
   },
 

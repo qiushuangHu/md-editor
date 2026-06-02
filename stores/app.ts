@@ -18,6 +18,8 @@ export const useAppStore = defineStore("app", {
     showToc: false,
     // 是否显示工具栏
     showToolbar: true,
+    // 面板宽度：[toc, editor, preview]
+    panelWidths: [] as number[],
   }),
 
   getters: {
@@ -90,6 +92,7 @@ export const useAppStore = defineStore("app", {
       "syncScroll",
       "showToc",
       "showToolbar",
+      "panelWidths",
     ],
   },
 });
