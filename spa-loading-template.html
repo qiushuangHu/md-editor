@@ -1,12 +1,18 @@
 <!doctype html>
-<!-- Nuxt SPA 挂载前的骨架屏（spa-loading-template），应用就绪后被自动替换 -->
+<!-- Nuxt SPA 挂载前的个性化 Loading（spa-loading-template），应用就绪后被自动替换 -->
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
       .skv {
         display: flex;
-        flex-direction: column;
+        align-items: center;
+        justify-content: center;
         height: 100vh;
         background: linear-gradient(135deg, #f9fafb, #f3f4f6);
         font-family:
@@ -17,161 +23,190 @@
           Roboto,
           sans-serif;
       }
-      .skv-header,
-      .skv-footer {
+      .skv-stage {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        background: rgba(255, 255, 255, 0.8);
-        border-color: rgba(229, 231, 235, 0.5);
-        flex-shrink: 0;
+        gap: 28px;
+        animation: skv-rise 0.6s ease both;
       }
-      .skv-header {
-        justify-content: space-between;
-        padding: 4px 16px;
-        min-height: 44px;
-        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+      /* 文档卡片：模拟"正在打开一篇 Markdown" */
+      .skv-doc {
+        width: 280px;
+        padding: 24px 26px;
+        background: #fff;
+        border: 1px solid rgba(229, 231, 235, 0.8);
+        border-radius: 12px;
+        box-shadow:
+          0 10px 40px -5px rgba(0, 0, 0, 0.1),
+          0 15px 50px -8px rgba(0, 0, 0, 0.06);
+        animation: skv-float 3s ease-in-out infinite 1.8s;
       }
+      .skv-doc::before {
+        content: "";
+        display: block;
+        width: 64px;
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #3b82f6, #60a5fa);
+        margin-bottom: 18px;
+      }
+      .skv-line {
+        height: 10px;
+        border-radius: 5px;
+        background: #e5e7eb;
+        width: 0;
+        animation: skv-type 0.55s ease-out forwards;
+      }
+      .skv-line + .skv-line {
+        margin-top: 14px;
+      }
+      .skv-line.l1 {
+        animation-delay: 0.5s;
+      }
+      .skv-line.l2 {
+        animation-delay: 0.85s;
+      }
+      .skv-line.l3 {
+        animation-delay: 1.2s;
+      }
+      .skv-line.l4 {
+        animation-delay: 1.55s;
+      }
+      .skv-caret {
+        display: inline-block;
+        width: 3px;
+        height: 14px;
+        margin-top: 14px;
+        background: #3b82f6;
+        border-radius: 1.5px;
+        animation: skv-blink 0.9s step-end infinite;
+      }
+      /* 品牌区 */
       .skv-brand {
         display: flex;
         align-items: center;
         gap: 12px;
       }
       .skv-logo {
-        width: 28px;
-        height: 28px;
-        border-radius: 8px;
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
         background: linear-gradient(135deg, #3b82f6, #2563eb);
         display: flex;
         align-items: center;
         justify-content: center;
+        box-shadow: 0 4px 25px -2px rgba(37, 99, 235, 0.4);
       }
-      .skv-title {
-        color: #2563eb;
-        font-size: 18px;
+      .skv-name {
+        font-size: 26px;
         font-weight: 700;
-        line-height: 1.2;
+        letter-spacing: 0.5px;
+        background: linear-gradient(90deg, #2563eb, #60a5fa);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        color: transparent;
       }
-      .skv-sub {
-        width: 72px;
-        height: 10px;
-        border-radius: 5px;
-      }
-      .skv-actions {
+      /* 跳动圆点 */
+      .skv-dots {
         display: flex;
         gap: 8px;
       }
-      .skv-icon {
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
+      .skv-dots i {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #93c5fd;
+        animation: skv-bounce 1.2s ease-in-out infinite;
       }
-      .skv-toolbar {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 16px;
-        background: rgba(255, 255, 255, 0.8);
-        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
-        flex-shrink: 0;
+      .skv-dots i:nth-child(2) {
+        animation-delay: 0.15s;
       }
-      .skv-pill {
-        width: 24px;
-        height: 18px;
-        border-radius: 4px;
+      .skv-dots i:nth-child(3) {
+        animation-delay: 0.3s;
       }
-      .skv-main {
-        flex: 1;
-        display: flex;
-        gap: 12px;
-        padding: 12px;
-        min-height: 0;
+      @keyframes skv-type {
+        to {
+          width: var(--w, 70%);
+        }
       }
-      .skv-pane {
-        flex: 1;
-        background: #fff;
-        border-radius: 10px;
-        border: 1px solid rgba(229, 231, 235, 0.5);
-        padding: 24px;
-        overflow: hidden;
+      @keyframes skv-blink {
+        50% {
+          opacity: 0;
+        }
       }
-      .skv-line {
-        height: 12px;
-        border-radius: 6px;
-        background: #e5e7eb;
-        position: relative;
-        overflow: hidden;
-        margin-bottom: 14px;
+      @keyframes skv-bounce {
+        0%,
+        60%,
+        100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-6px);
+        }
       }
-      .skv-line::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        transform: translateX(-100%);
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.7),
-          transparent
-        );
-        animation: skv-shimmer 1.4s infinite;
+      @keyframes skv-rise {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
       }
-      .skv-footer {
-        justify-content: space-between;
-        padding: 8px 24px;
-        min-height: 36px;
-        border-top: 1px solid rgba(229, 231, 235, 0.5);
-      }
-      .skv-foot-group {
-        display: flex;
-        gap: 20px;
-      }
-      .skv-foot-line {
-        width: 90px;
-        height: 10px;
-        border-radius: 5px;
+      @keyframes skv-float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-6px);
+        }
       }
       /* 暗色模式（由下方内联脚本按用户持久化设置预先切换） */
       .dark .skv {
         background: linear-gradient(135deg, #111827, #1f2937);
       }
-      .dark .skv-header,
-      .dark .skv-footer,
-      .dark .skv-toolbar {
-        background: rgba(31, 41, 55, 0.8);
-        border-color: rgba(55, 65, 81, 0.5);
-      }
-      .dark .skv-title {
-        color: #60a5fa;
-      }
-      .dark .skv-pane {
+      .dark .skv-doc {
         background: #1f2937;
-        border-color: rgba(55, 65, 81, 0.5);
+        border-color: rgba(55, 65, 81, 0.6);
+        box-shadow: 0 10px 40px -5px rgba(0, 0, 0, 0.45);
       }
       .dark .skv-line {
         background: #374151;
       }
-      .dark .skv-line::after {
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.08),
-          transparent
-        );
+      .dark .skv-caret {
+        background: #60a5fa;
       }
-      @keyframes skv-shimmer {
-        100% {
-          transform: translateX(100%);
-        }
+      .dark .skv-name {
+        background: linear-gradient(90deg, #60a5fa, #93c5fd);
+        -webkit-background-clip: text;
+        background-clip: text;
+      }
+      .dark .skv-dots i {
+        background: #3b82f6;
+      }
+      .dark .skv-logo {
+        box-shadow: 0 4px 25px -2px rgba(59, 130, 246, 0.5);
       }
     </style>
   </head>
   <body>
     <div class="skv">
-      <div class="skv-header">
+      <div class="skv-stage">
+        <div class="skv-doc">
+          <div class="skv-line l1" style="--w: 92%"></div>
+          <div class="skv-line l2" style="--w: 70%"></div>
+          <div class="skv-line l3" style="--w: 82%"></div>
+          <div class="skv-line l4" style="--w: 45%"></div>
+          <span class="skv-caret"></span>
+        </div>
         <div class="skv-brand">
           <div class="skv-logo">
             <svg
-              style="width: 16px; height: 16px"
+              style="width: 24px; height: 24px"
               fill="none"
               stroke="#fff"
               stroke-width="2"
@@ -184,60 +219,9 @@
               />
             </svg>
           </div>
-          <div>
-            <div class="skv-title">MD Viewer</div>
-            <div class="skv-sub skv-line" style="height: 10px"></div>
-          </div>
+          <div class="skv-name">MD Viewer</div>
         </div>
-        <div class="skv-actions">
-          <div
-            class="skv-icon skv-line"
-            style="height: 16px; width: 16px; margin: 0"
-          ></div>
-          <div
-            class="skv-icon skv-line"
-            style="height: 16px; width: 16px; margin: 0"
-          ></div>
-          <div
-            class="skv-icon skv-line"
-            style="height: 16px; width: 16px; margin: 0"
-          ></div>
-        </div>
-      </div>
-      <div class="skv-toolbar">
-        <div class="skv-pill skv-line" style="margin: 0"></div>
-        <div class="skv-pill skv-line" style="margin: 0"></div>
-        <div class="skv-pill skv-line" style="margin: 0"></div>
-        <div class="skv-pill skv-line" style="margin: 0"></div>
-      </div>
-      <div class="skv-main">
-        <div class="skv-pane">
-          <div class="skv-line" style="width: 45%; height: 16px"></div>
-          <div class="skv-line" style="width: 90%"></div>
-          <div class="skv-line" style="width: 75%"></div>
-          <div class="skv-line" style="width: 85%"></div>
-          <div class="skv-line" style="width: 60%"></div>
-          <div class="skv-line" style="width: 80%"></div>
-          <div class="skv-line" style="width: 40%"></div>
-        </div>
-        <div class="skv-pane">
-          <div class="skv-line" style="width: 35%; height: 16px"></div>
-          <div class="skv-line" style="width: 85%"></div>
-          <div class="skv-line" style="width: 70%"></div>
-          <div class="skv-line" style="width: 90%"></div>
-          <div class="skv-line" style="width: 55%"></div>
-          <div class="skv-line" style="width: 75%"></div>
-          <div class="skv-line" style="width: 45%"></div>
-        </div>
-      </div>
-      <div class="skv-footer">
-        <div class="skv-foot-group">
-          <div class="skv-foot-line skv-line" style="margin: 0"></div>
-          <div class="skv-foot-line skv-line" style="margin: 0"></div>
-        </div>
-        <div class="skv-foot-group">
-          <div class="skv-foot-line skv-line" style="margin: 0"></div>
-        </div>
+        <div class="skv-dots"><i></i><i></i><i></i></div>
       </div>
     </div>
     <script>
