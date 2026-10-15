@@ -1,0 +1,257 @@
+<!doctype html>
+<!-- Nuxt SPA 挂载前的骨架屏（spa-loading-template），应用就绪后被自动替换 -->
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      .skv {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+        font-family:
+          Inter,
+          system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+      }
+      .skv-header,
+      .skv-footer {
+        display: flex;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.8);
+        border-color: rgba(229, 231, 235, 0.5);
+        flex-shrink: 0;
+      }
+      .skv-header {
+        justify-content: space-between;
+        padding: 4px 16px;
+        min-height: 44px;
+        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+      }
+      .skv-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .skv-logo {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .skv-title {
+        color: #2563eb;
+        font-size: 18px;
+        font-weight: 700;
+        line-height: 1.2;
+      }
+      .skv-sub {
+        width: 72px;
+        height: 10px;
+        border-radius: 5px;
+      }
+      .skv-actions {
+        display: flex;
+        gap: 8px;
+      }
+      .skv-icon {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
+      }
+      .skv-toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background: rgba(255, 255, 255, 0.8);
+        border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+        flex-shrink: 0;
+      }
+      .skv-pill {
+        width: 24px;
+        height: 18px;
+        border-radius: 4px;
+      }
+      .skv-main {
+        flex: 1;
+        display: flex;
+        gap: 12px;
+        padding: 12px;
+        min-height: 0;
+      }
+      .skv-pane {
+        flex: 1;
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid rgba(229, 231, 235, 0.5);
+        padding: 24px;
+        overflow: hidden;
+      }
+      .skv-line {
+        height: 12px;
+        border-radius: 6px;
+        background: #e5e7eb;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 14px;
+      }
+      .skv-line::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.7),
+          transparent
+        );
+        animation: skv-shimmer 1.4s infinite;
+      }
+      .skv-footer {
+        justify-content: space-between;
+        padding: 8px 24px;
+        min-height: 36px;
+        border-top: 1px solid rgba(229, 231, 235, 0.5);
+      }
+      .skv-foot-group {
+        display: flex;
+        gap: 20px;
+      }
+      .skv-foot-line {
+        width: 90px;
+        height: 10px;
+        border-radius: 5px;
+      }
+      /* 暗色模式（由下方内联脚本按用户持久化设置预先切换） */
+      .dark .skv {
+        background: linear-gradient(135deg, #111827, #1f2937);
+      }
+      .dark .skv-header,
+      .dark .skv-footer,
+      .dark .skv-toolbar {
+        background: rgba(31, 41, 55, 0.8);
+        border-color: rgba(55, 65, 81, 0.5);
+      }
+      .dark .skv-title {
+        color: #60a5fa;
+      }
+      .dark .skv-pane {
+        background: #1f2937;
+        border-color: rgba(55, 65, 81, 0.5);
+      }
+      .dark .skv-line {
+        background: #374151;
+      }
+      .dark .skv-line::after {
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.08),
+          transparent
+        );
+      }
+      @keyframes skv-shimmer {
+        100% {
+          transform: translateX(100%);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="skv">
+      <div class="skv-header">
+        <div class="skv-brand">
+          <div class="skv-logo">
+            <svg
+              style="width: 16px; height: 16px"
+              fill="none"
+              stroke="#fff"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+          </div>
+          <div>
+            <div class="skv-title">MD Viewer</div>
+            <div class="skv-sub skv-line" style="height: 10px"></div>
+          </div>
+        </div>
+        <div class="skv-actions">
+          <div
+            class="skv-icon skv-line"
+            style="height: 16px; width: 16px; margin: 0"
+          ></div>
+          <div
+            class="skv-icon skv-line"
+            style="height: 16px; width: 16px; margin: 0"
+          ></div>
+          <div
+            class="skv-icon skv-line"
+            style="height: 16px; width: 16px; margin: 0"
+          ></div>
+        </div>
+      </div>
+      <div class="skv-toolbar">
+        <div class="skv-pill skv-line" style="margin: 0"></div>
+        <div class="skv-pill skv-line" style="margin: 0"></div>
+        <div class="skv-pill skv-line" style="margin: 0"></div>
+        <div class="skv-pill skv-line" style="margin: 0"></div>
+      </div>
+      <div class="skv-main">
+        <div class="skv-pane">
+          <div class="skv-line" style="width: 45%; height: 16px"></div>
+          <div class="skv-line" style="width: 90%"></div>
+          <div class="skv-line" style="width: 75%"></div>
+          <div class="skv-line" style="width: 85%"></div>
+          <div class="skv-line" style="width: 60%"></div>
+          <div class="skv-line" style="width: 80%"></div>
+          <div class="skv-line" style="width: 40%"></div>
+        </div>
+        <div class="skv-pane">
+          <div class="skv-line" style="width: 35%; height: 16px"></div>
+          <div class="skv-line" style="width: 85%"></div>
+          <div class="skv-line" style="width: 70%"></div>
+          <div class="skv-line" style="width: 90%"></div>
+          <div class="skv-line" style="width: 55%"></div>
+          <div class="skv-line" style="width: 75%"></div>
+          <div class="skv-line" style="width: 45%"></div>
+        </div>
+      </div>
+      <div class="skv-footer">
+        <div class="skv-foot-group">
+          <div class="skv-foot-line skv-line" style="margin: 0"></div>
+          <div class="skv-foot-line skv-line" style="margin: 0"></div>
+        </div>
+        <div class="skv-foot-group">
+          <div class="skv-foot-line skv-line" style="margin: 0"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      // 在应用挂载前按用户持久化设置恢复主题，避免亮/暗色闪烁
+      try {
+        var settings = JSON.parse(
+          localStorage.getItem("md-viewer-settings") || "{}",
+        );
+        if (settings.theme === "dark") {
+          document.documentElement.classList.add("dark");
+        } else if (settings.theme === "eye-care") {
+          document.documentElement.style.backgroundColor = "#f5f5dc";
+        }
+      } catch (e) {}
+    </script>
+  </body>
+</html>

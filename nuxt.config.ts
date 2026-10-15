@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     "@nuxtjs/tailwindcss",
     "@pinia/nuxt",
     "pinia-plugin-persistedstate/nuxt",
+    '@vercel/analytics'
   ],
 
   tailwindcss: {
@@ -16,6 +17,9 @@ export default defineNuxtConfig({
     viewer: false,
     cssPath: false,
   },
+
+  // SPA 挂载前的骨架屏模板（Nuxt 4 默认只在 app/ 目录查找，显式指向根目录文件）
+  spaLoadingTemplate: "./spa-loading-template.html",
 
   app: {
     head: {
