@@ -7,7 +7,7 @@
       v-if="showLeftArrow"
       class="md-tabs-arrow w-6 h-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors flex-shrink-0"
       @click="scrollLeft"
-      title="向左滚动"
+      :title="t('tabs.scrollLeft')"
     >
       <svg
         class="w-4 h-4"
@@ -66,7 +66,7 @@
         <span
           v-if="file.isDirty"
           class="w-1.5 h-1.5 rounded-full bg-primary-500 flex-shrink-0"
-          title="有未保存的更改"
+          :title="t('tabs.unsaved')"
         ></span>
 
         <!-- 关闭按钮 -->
@@ -78,7 +78,7 @@
               file.id !== editorStore.activeFileId,
           }"
           @click.stop="handleClose(file.id)"
-          title="关闭"
+          :title="t('common.close')"
         >
           <svg
             class="w-3 h-3"
@@ -102,7 +102,7 @@
       v-if="showRightArrow"
       class="md-tabs-arrow w-6 h-full flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-400 transition-colors flex-shrink-0"
       @click="scrollRight"
-      title="向右滚动"
+      :title="t('tabs.scrollRight')"
     >
       <svg
         class="w-4 h-4"
@@ -123,7 +123,7 @@
     <button
       class="md-tab-add w-7 h-7 flex items-center justify-center rounded hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400 transition-colors flex-shrink-0 mx-1"
       @click="triggerOpenFile"
-      title="打开文件 (Ctrl+O)"
+      :title="t('tabs.openFile')"
     >
       <svg
         class="w-4 h-4"
@@ -166,26 +166,26 @@
             class="w-full px-3 py-1.5 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             @click="switchToFile(contextMenuFileId!)"
           >
-            切换到该文件
+            {{ t("tabs.switchToFile") }}
           </button>
           <button
             class="w-full px-3 py-1.5 text-left text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
             @click="handleClose(contextMenuFileId!)"
           >
-            关闭
+            {{ t("common.close") }}
           </button>
           <div class="my-1 border-t border-gray-200 dark:border-gray-700"></div>
           <button
             class="w-full px-3 py-1.5 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             @click="closeOtherTabs"
           >
-            关闭其他标签页
+            {{ t("tabs.closeOthers") }}
           </button>
           <button
             class="w-full px-3 py-1.5 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
             @click="closeAllTabs"
           >
-            关闭所有标签页
+            {{ t("tabs.closeAll") }}
           </button>
         </div>
       </Transition>
@@ -199,6 +199,7 @@ import { notifyWarning, notifyError } from "~/utils/notification";
 import { showConfirm } from "~/composables/useConfirmDialog";
 
 const editorStore = useEditorStore();
+const { t } = useI18n();
 const fileInput = ref<HTMLInputElement | null>(null);
 const tabsScrollRef = ref<HTMLElement | null>(null);
 
@@ -232,7 +233,7 @@ const handleFileUpload = async (e: Event) => {
       const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
 
       if (!allowedTypes.includes(fileExt)) {
-        notifyWarning(`不支持的文件格式: ${file.name}`);
+        notifyWarning(t("notify.unsupportedFormat", { name: file.name }));
         continue;
       }
 
@@ -240,7 +241,7 @@ const handleFileUpload = async (e: Event) => {
     }
   } catch (error) {
     console.error("Failed to load files:", error);
-    notifyError("文件加载失败，请重试");
+    notifyError(t("notify.loadFailed"));
   }
 
   // 重置input
@@ -255,10 +256,10 @@ const handleClose = async (id: string) => {
   // 如果有未保存的更改，提示用户
   if (file.isDirty) {
     const confirmed = await showConfirm({
-      title: "未保存的更改",
-      message: `"${file.fileName}" 有未保存的更改，是否关闭？`,
-      confirmText: "关闭",
-      cancelText: "取消",
+      title: t("confirm.unsavedTitle"),
+      message: t("confirm.closeFileMessage", { name: file.fileName }),
+      confirmText: t("confirm.close"),
+      cancelText: t("common.cancel"),
     });
     if (!confirmed) return;
   }
@@ -342,10 +343,10 @@ const closeAllTabs = async () => {
   const hasDirtyFiles = editorStore.files.some((f) => f.isDirty);
   if (hasDirtyFiles) {
     const confirmed = await showConfirm({
-      title: "未保存的更改",
-      message: "有未保存的更改，是否关闭所有文件？",
-      confirmText: "关闭全部",
-      cancelText: "取消",
+      title: t("confirm.unsavedTitle"),
+      message: t("confirm.closeAllMessage"),
+      confirmText: t("confirm.closeAll"),
+      cancelText: t("common.cancel"),
     });
     if (!confirmed) return;
   }

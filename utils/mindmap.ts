@@ -1,6 +1,7 @@
 import dagre from "@dagrejs/dagre";
 import type { Node, Edge } from "@vue-flow/core";
 import { Position } from "@vue-flow/core";
+import { t } from "~/i18n";
 
 /** 思维导图节点数据 */
 interface MindMapNodeData {
@@ -29,7 +30,7 @@ const getDimension = (level: number) =>
  */
 export function parseMarkdownToMindMap(
   content: string,
-  maxLevel: number = 3
+  maxLevel: number = 3,
 ): { nodes: Node<MindMapNodeData>[]; edges: Edge[] } {
   if (!content?.trim()) return { nodes: [], edges: [] };
 
@@ -43,7 +44,7 @@ export function parseMarkdownToMindMap(
   let hasRoot = false;
 
   // 尝试获取文件名作为根节点（从第一行 H1 或第一个标题）
-  let rootLabel = "思维导图";
+  let rootLabel = t("mindmap.rootLabel");
   const firstH1 = lines.find((l) => /^#\s+/.test(l.trim()));
   if (firstH1) {
     rootLabel = firstH1.replace(/^#\s+/, "").trim();
@@ -166,7 +167,7 @@ export function parseMarkdownToMindMap(
  */
 function applyDagreLayout(
   nodes: Node<MindMapNodeData>[],
-  edges: Edge[]
+  edges: Edge[],
 ): { nodes: Node<MindMapNodeData>[]; edges: Edge[] } {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));

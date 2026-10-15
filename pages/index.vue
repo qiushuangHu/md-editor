@@ -95,7 +95,7 @@
                       />
                     </svg>
                     <span
-                      >大小:
+                      >{{ t("file.size") }}:
                       {{ formatFileSize(activeFile?.fileSize || 0) }}</span
                     >
                   </div>
@@ -117,7 +117,7 @@
                       />
                     </svg>
                     <span
-                      >修改:
+                      >{{ t("file.modified") }}:
                       {{ formatDateTime(activeFile?.lastModified) }}</span
                     >
                   </div>
@@ -136,7 +136,7 @@
                       />
                     </svg>
                     <span
-                      >字符:
+                      >{{ t("file.chars") }}:
                       {{ editorStore.wordCount.chars.toLocaleString() }}</span
                     >
                   </div>
@@ -148,31 +148,6 @@
       </div>
 
       <div class="flex items-center gap-0.5">
-        <!-- 工具栏 -->
-        <button
-          class="btn-icon"
-          @click="toggleToolbar"
-          :class="{
-            'bg-primary-50 dark:bg-primary-900/30 text-primary-600':
-              appStore.showToolbar,
-          }"
-          title="工具栏"
-        >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-            />
-          </svg>
-        </button>
-
         <!-- TOC -->
         <button
           class="btn-icon"
@@ -181,7 +156,7 @@
             'bg-primary-50 dark:bg-primary-900/30 text-primary-600':
               appStore.showToc,
           }"
-          title="目录"
+          :title="t('header.toc')"
         >
           <svg
             class="w-4 h-4"
@@ -198,29 +173,12 @@
           </svg>
         </button>
 
-        <!-- 布局切换 -->
+        <!-- 思维导图 -->
         <button
           class="btn-icon"
-          @click="toggleLayout"
-          :title="`布局: ${appStore.layout}`"
+          @click="openMindMap"
+          :title="t('header.mindMap')"
         >
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 01-2-2H5a2 2 0 01-2 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"
-            />
-          </svg>
-        </button>
-
-        <!-- 思维导图 -->
-        <button class="btn-icon" @click="openMindMap" title="思维导图">
           <svg
             class="w-4 h-4"
             fill="none"
@@ -241,7 +199,11 @@
 
         <!-- 导出 -->
         <div class="relative" ref="exportMenuRef">
-          <button class="btn-icon" @click="toggleExportMenu" title="导出">
+          <button
+            class="btn-icon"
+            @click="toggleExportMenu"
+            :title="t('header.export')"
+          >
             <svg
               class="w-4 h-4"
               fill="none"
@@ -283,7 +245,7 @@
                     d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
                   />
                 </svg>
-                <span>导出 PDF</span>
+                <span>{{ t("header.exportPdf") }}</span>
               </button>
               <button
                 @click="exportHtml"
@@ -302,7 +264,68 @@
                     d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
                   />
                 </svg>
-                <span>导出 HTML</span>
+                <span>{{ t("header.exportHtml") }}</span>
+              </button>
+            </div>
+          </Transition>
+        </Teleport>
+
+        <!-- 更多菜单（使用Teleport避免被overflow裁剪） -->
+        <Teleport to="body">
+          <Transition name="slide">
+            <div
+              v-if="showMoreMenu"
+              class="fixed w-44 bg-white dark:bg-gray-800 rounded-xl shadow-medium border border-gray-200 dark:border-gray-700 py-1 z-[1000]"
+              :style="moreMenuPosition"
+            >
+              <!-- 工具栏开关 -->
+              <button :class="menuItemClass" @click="toggleToolbar">
+                <span>{{ t("header.toolbar") }}</span>
+                <span
+                  v-if="appStore.showToolbar"
+                  class="text-primary-600 font-bold"
+                  >✓</span
+                >
+              </button>
+              <div
+                class="my-1 border-t border-gray-200 dark:border-gray-700"
+              ></div>
+              <!-- 布局 -->
+              <div class="px-4 pt-1 pb-1 text-xs text-gray-400">
+                {{ t("header.layout") }}
+              </div>
+              <button
+                v-for="opt in layoutOptions"
+                :key="opt.value"
+                :class="menuItemClass"
+                @click="setLayout(opt.value)"
+              >
+                <span>{{ opt.label }}</span>
+                <span
+                  v-if="appStore.layout === opt.value"
+                  class="text-primary-600 font-bold"
+                  >✓</span
+                >
+              </button>
+              <div
+                class="my-1 border-t border-gray-200 dark:border-gray-700"
+              ></div>
+              <!-- 语言 -->
+              <div class="px-4 pt-1 pb-1 text-xs text-gray-400">
+                {{ t("header.language") }}
+              </div>
+              <button
+                v-for="opt in localeOptions"
+                :key="opt.value"
+                :class="menuItemClass"
+                @click="setLocale(opt.value)"
+              >
+                <span>{{ opt.label }}</span>
+                <span
+                  v-if="locale === opt.value"
+                  class="text-primary-600 font-bold"
+                  >✓</span
+                >
               </button>
             </div>
           </Transition>
@@ -312,7 +335,7 @@
         <button
           class="btn-icon"
           @click="toggleTheme"
-          :title="`主题: ${themeLabel}`"
+          :title="`${t('header.theme')}: ${themeLabel}`"
         >
           <svg
             v-if="appStore.theme === 'light'"
@@ -363,6 +386,35 @@
             />
           </svg>
         </button>
+
+        <!-- 更多菜单 -->
+        <div class="relative" ref="moreMenuRef">
+          <button
+            class="btn-icon"
+            @click="toggleMoreMenu"
+            :title="t('header.more')"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
     </header>
 
@@ -398,10 +450,10 @@
             </div>
             <div class="text-center">
               <p class="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                正在导出PDF
+                {{ t("export.exportingPdf") }}
               </p>
               <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                请稍候，正在生成文档...
+                {{ t("export.pleaseWait") }}
               </p>
             </div>
           </div>
@@ -428,9 +480,9 @@
               d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"
             />
           </svg>
-          <span class="font-medium"
-            >{{ editorStore.wordCount.chars }} 字符</span
-          >
+          <span class="font-medium">{{
+            t("footer.charsCount", { n: editorStore.wordCount.chars })
+          }}</span>
         </div>
         <div class="flex items-center gap-2">
           <svg
@@ -446,7 +498,9 @@
               d="M4 6h16M4 10h16M4 14h16M4 18h16"
             />
           </svg>
-          <span class="font-medium">{{ editorStore.wordCount.lines }} 行</span>
+          <span class="font-medium">{{
+            t("footer.linesCount", { n: editorStore.wordCount.lines })
+          }}</span>
         </div>
       </div>
       <div class="flex items-center gap-5">
@@ -458,7 +512,7 @@
             v-model="appStore.syncScroll"
             class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-500 cursor-pointer"
           />
-          <span>同步滚动</span>
+          <span>{{ t("footer.syncScroll") }}</span>
         </label>
         <div v-if="editorStore.lastSaved" class="flex items-center gap-2">
           <svg
@@ -474,7 +528,9 @@
               d="M5 13l4 4L19 7"
             />
           </svg>
-          <span>已保存: {{ formatTime(editorStore.lastSaved) }}</span>
+          <span>{{
+            t("footer.saved", { time: formatTime(editorStore.lastSaved) })
+          }}</span>
         </div>
       </div>
     </footer>
@@ -501,25 +557,43 @@ import {
 
 const appStore = useAppStore();
 const editorStore = useEditorStore();
+const { t, locale, setLocale } = useI18n();
+
+// 页面标题与描述跟随语言切换
+useHead({
+  title: () => t("app.title"),
+  meta: [{ name: "description", content: () => t("app.description") }],
+});
 
 // 当前激活的文件
 const activeFile = computed(() => editorStore.activeFile);
 
 const themeLabel = computed(() => {
   const labels: Record<string, string> = {
-    light: "亮色",
-    dark: "暗色",
-    "eye-care": "护眼",
+    light: t("theme.light"),
+    dark: t("theme.dark"),
+    "eye-care": t("theme.eyeCare"),
   };
-  return labels[appStore.theme] || "亮色";
+  return labels[appStore.theme] || t("theme.light");
 });
+
+const layoutOptions = computed(() => [
+  { value: "split", label: t("header.layoutSplit") },
+  { value: "editor-only", label: t("header.layoutEditor") },
+  { value: "preview-only", label: t("header.layoutPreview") },
+]);
+
+const localeOptions = [
+  { value: "zh-CN" as const, label: "中文" },
+  { value: "en" as const, label: "English" },
+];
+
+// 更多菜单项通用样式
+const menuItemClass =
+  "w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between transition-colors";
 
 const toggleTheme = () => {
   appStore.toggleTheme();
-};
-
-const toggleLayout = () => {
-  appStore.toggleLayout();
 };
 
 const toggleToc = () => {
@@ -528,11 +602,17 @@ const toggleToc = () => {
 
 const toggleToolbar = () => {
   appStore.showToolbar = !appStore.showToolbar;
+  showMoreMenu.value = false;
+};
+
+const setLayout = (layout: string) => {
+  appStore.layout = layout;
+  showMoreMenu.value = false;
 };
 
 const exportPdf = async () => {
   if (!editorStore.content) {
-    notifyWarning("请先打开或编辑一个 Markdown 文件");
+    notifyWarning(t("notify.openFirst"));
     return;
   }
 
@@ -545,10 +625,10 @@ const exportPdf = async () => {
       currentFile?.fileName.replace(/\.md$/, ".pdf") || "export.pdf";
     // 使用页面中已渲染的预览元素，而不是创建临时容器
     await exportToPdf("", pdfFileName, true);
-    notifySuccess("PDF 文件已成功导出");
+    notifySuccess(t("export.pdfSuccess"));
   } catch (error) {
     console.error("PDF导出失败:", error);
-    notifyError("PDF导出失败，请稍后重试");
+    notifyError(t("export.pdfFailed"));
   } finally {
     isExportingPdf.value = false;
   }
@@ -556,7 +636,7 @@ const exportPdf = async () => {
 
 const exportHtml = () => {
   if (!editorStore.content) {
-    notifyWarning("请先打开或编辑一个 Markdown 文件");
+    notifyWarning(t("notify.openFirst"));
     return;
   }
 
@@ -565,19 +645,23 @@ const exportHtml = () => {
   const htmlFileName =
     currentFile?.fileName.replace(/\.md$/, ".html") || "export.html";
   exportToHtml(htmlContent, htmlFileName);
-  notifySuccess("HTML 文件已成功导出");
+  notifySuccess(t("export.htmlSuccess"));
 };
 
 const showExportMenu = ref(false);
 const showMindMap = ref(false);
 const exportMenuRef = ref<HTMLElement | null>(null);
+const showMoreMenu = ref(false);
+const moreMenuRef = ref<HTMLElement | null>(null);
+const moreMenuPosition = ref({});
 
 const openMindMap = () => {
   if (!editorStore.content) {
-    notifyWarning("请先打开或编辑一个 Markdown 文件");
+    notifyWarning(t("notify.openFirst"));
     return;
   }
   showExportMenu.value = false;
+  showMoreMenu.value = false;
   showMindMap.value = true;
 };
 const isExportingPdf = ref(false); // PDF导出加载状态
@@ -610,6 +694,7 @@ const handleFileInfoMouseLeave = () => {
 };
 
 const toggleExportMenu = () => {
+  showMoreMenu.value = false;
   showExportMenu.value = !showExportMenu.value;
 
   if (showExportMenu.value && exportMenuRef.value) {
@@ -621,14 +706,29 @@ const toggleExportMenu = () => {
   }
 };
 
+// 更多菜单
+const toggleMoreMenu = () => {
+  showExportMenu.value = false;
+  showMoreMenu.value = !showMoreMenu.value;
+
+  if (showMoreMenu.value && moreMenuRef.value) {
+    const rect = moreMenuRef.value.getBoundingClientRect();
+    moreMenuPosition.value = {
+      right: `${window.innerWidth - rect.right}px`,
+      top: `${rect.bottom + 8}px`,
+    };
+  }
+};
+
 // 点击外部关闭菜单
 const handleClickOutside = (e: MouseEvent) => {
-  if (
-    showExportMenu.value &&
-    exportMenuRef.value &&
-    !exportMenuRef.value.contains(e.target as Node)
-  ) {
+  const outside = (menuRef: HTMLElement | null) =>
+    menuRef && !menuRef.contains(e.target as Node);
+  if (showExportMenu.value && outside(exportMenuRef.value)) {
     showExportMenu.value = false;
+  }
+  if (showMoreMenu.value && outside(moreMenuRef.value)) {
+    showMoreMenu.value = false;
   }
 };
 

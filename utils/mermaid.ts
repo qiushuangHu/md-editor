@@ -1,4 +1,6 @@
 // Mermaid 图表客户端渲染：将 markdown.ts 生成的 .mermaid-block 占位块渲染为 SVG
+import { t } from "~/i18n";
+
 type MermaidTheme = "default" | "dark";
 
 type Mermaid = (typeof import("mermaid"))["default"];
@@ -24,10 +26,10 @@ const buildToolbar = (): HTMLElement => {
   const bar = document.createElement("div");
   bar.className = "mermaid-toolbar";
   bar.innerHTML = `
-    <button type="button" data-mermaid-zoom="out" title="缩小">−</button>
+    <button type="button" data-mermaid-zoom="out" title="${t("mermaid.zoomOut")}">−</button>
     <span data-mermaid-scale>100%</span>
-    <button type="button" data-mermaid-zoom="in" title="放大">＋</button>
-    <button type="button" data-mermaid-zoom="reset" title="重置大小">1:1</button>`;
+    <button type="button" data-mermaid-zoom="in" title="${t("mermaid.zoomIn")}">＋</button>
+    <button type="button" data-mermaid-zoom="reset" title="${t("mermaid.zoomReset")}">1:1</button>`;
   return bar;
 };
 

@@ -6,7 +6,11 @@
     <!-- 预览模式下的工具 -->
     <template v-if="appStore.layout === 'preview-only'">
       <!-- 搜索 -->
-      <button class="btn-icon" @click="toggleSearch" title="搜索 (Ctrl+F)">
+      <button
+        class="btn-icon"
+        @click="toggleSearch"
+        :title="t('toolbar.search')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -23,7 +27,11 @@
       </button>
 
       <!-- 打印 -->
-      <button class="btn-icon" @click="printDocument" title="打印">
+      <button
+        class="btn-icon"
+        @click="printDocument"
+        :title="t('toolbar.print')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -40,7 +48,11 @@
       </button>
 
       <!-- 全屏查看 -->
-      <button class="btn-icon" @click="toggleFullscreen" title="全屏查看">
+      <button
+        class="btn-icon"
+        @click="toggleFullscreen"
+        :title="t('toolbar.fullscreen')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -64,7 +76,7 @@
           class="btn-icon"
           @click="zoomOut"
           :disabled="zoomLevel <= 50"
-          title="缩小"
+          :title="t('toolbar.zoomOut')"
         >
           <svg
             class="w-4 h-4"
@@ -89,7 +101,7 @@
           class="btn-icon"
           @click="zoomIn"
           :disabled="zoomLevel >= 200"
-          title="放大"
+          :title="t('toolbar.zoomIn')"
         >
           <svg
             class="w-4 h-4"
@@ -111,20 +123,32 @@
     <!-- 编辑模式下的工具按钮组（preview-only模式下隐藏） -->
     <template v-else>
       <!-- 标题 -->
-      <button class="btn-icon" @click="insertHeading(1)" title="一级标题">
+      <button
+        class="btn-icon"
+        @click="insertHeading(1)"
+        :title="t('toolbar.h1')"
+      >
         <span class="text-sm font-bold">H1</span>
       </button>
-      <button class="btn-icon" @click="insertHeading(2)" title="二级标题">
+      <button
+        class="btn-icon"
+        @click="insertHeading(2)"
+        :title="t('toolbar.h2')"
+      >
         <span class="text-sm font-bold">H2</span>
       </button>
-      <button class="btn-icon" @click="insertHeading(3)" title="三级标题">
+      <button
+        class="btn-icon"
+        @click="insertHeading(3)"
+        :title="t('toolbar.h3')"
+      >
         <span class="text-sm font-bold">H3</span>
       </button>
 
       <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
       <!-- 文本格式 -->
-      <button class="btn-icon" @click="insertBold" title="粗体 (Ctrl+B)">
+      <button class="btn-icon" @click="insertBold" :title="t('toolbar.bold')">
         <svg
           class="w-4 h-4"
           fill="none"
@@ -139,7 +163,11 @@
           />
         </svg>
       </button>
-      <button class="btn-icon" @click="insertItalic" title="斜体 (Ctrl+I)">
+      <button
+        class="btn-icon"
+        @click="insertItalic"
+        :title="t('toolbar.italic')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -154,14 +182,22 @@
           />
         </svg>
       </button>
-      <button class="btn-icon" @click="insertStrike" title="删除线">
+      <button
+        class="btn-icon"
+        @click="insertStrike"
+        :title="t('toolbar.strikethrough')"
+      >
         <span class="text-sm line-through font-bold">S</span>
       </button>
 
       <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
       <!-- 列表 -->
-      <button class="btn-icon" @click="insertUnorderedList" title="无序列表">
+      <button
+        class="btn-icon"
+        @click="insertUnorderedList"
+        :title="t('toolbar.unorderedList')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -176,7 +212,11 @@
           />
         </svg>
       </button>
-      <button class="btn-icon" @click="insertOrderedList" title="有序列表">
+      <button
+        class="btn-icon"
+        @click="insertOrderedList"
+        :title="t('toolbar.orderedList')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -191,7 +231,11 @@
           />
         </svg>
       </button>
-      <button class="btn-icon" @click="insertTaskList" title="任务列表">
+      <button
+        class="btn-icon"
+        @click="insertTaskList"
+        :title="t('toolbar.taskList')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -210,7 +254,11 @@
       <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
       <!-- 引用和代码 -->
-      <button class="btn-icon" @click="insertBlockquote" title="引用">
+      <button
+        class="btn-icon"
+        @click="insertBlockquote"
+        :title="t('toolbar.quote')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -225,7 +273,11 @@
           />
         </svg>
       </button>
-      <button class="btn-icon" @click="insertInlineCode" title="行内代码">
+      <button
+        class="btn-icon"
+        @click="insertInlineCode"
+        :title="t('toolbar.inlineCode')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -240,7 +292,11 @@
           />
         </svg>
       </button>
-      <button class="btn-icon" @click="insertCodeBlock" title="代码块">
+      <button
+        class="btn-icon"
+        @click="insertCodeBlock"
+        :title="t('toolbar.codeBlock')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -259,7 +315,7 @@
       <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
       <!-- 链接和图片 -->
-      <button class="btn-icon" @click="insertLink" title="链接">
+      <button class="btn-icon" @click="insertLink" :title="t('toolbar.link')">
         <svg
           class="w-4 h-4"
           fill="none"
@@ -274,7 +330,7 @@
           />
         </svg>
       </button>
-      <button class="btn-icon" @click="insertImage" title="图片">
+      <button class="btn-icon" @click="insertImage" :title="t('toolbar.image')">
         <svg
           class="w-4 h-4"
           fill="none"
@@ -293,7 +349,7 @@
       <div class="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1"></div>
 
       <!-- 表格 -->
-      <button class="btn-icon" @click="insertTable" title="表格">
+      <button class="btn-icon" @click="insertTable" :title="t('toolbar.table')">
         <svg
           class="w-4 h-4"
           fill="none"
@@ -310,7 +366,11 @@
       </button>
 
       <!-- 分割线 -->
-      <button class="btn-icon" @click="insertHorizontalRule" title="分割线">
+      <button
+        class="btn-icon"
+        @click="insertHorizontalRule"
+        :title="t('toolbar.horizontalRule')"
+      >
         <svg
           class="w-4 h-4"
           fill="none"
@@ -337,7 +397,11 @@
       class="hidden"
       @change="handleFileUpload"
     />
-    <button class="btn btn-secondary mr-1" @click="openFile" title="打开文件">
+    <button
+      class="btn btn-secondary mr-1"
+      @click="openFile"
+      :title="t('toolbar.open')"
+    >
       <svg
         class="w-4 h-4"
         fill="none"
@@ -351,9 +415,13 @@
           d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"
         />
       </svg>
-      <span>打开</span>
+      <span>{{ t("toolbar.openShort") }}</span>
     </button>
-    <button class="btn btn-primary" @click="saveCurrentFile" title="保存文件">
+    <button
+      class="btn btn-primary"
+      @click="saveCurrentFile"
+      :title="t('toolbar.save')"
+    >
       <svg
         class="w-4 h-4"
         fill="none"
@@ -367,7 +435,7 @@
           d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
         />
       </svg>
-      <span>保存</span>
+      <span>{{ t("toolbar.saveShort") }}</span>
     </button>
   </div>
 </template>
@@ -379,6 +447,7 @@ import { notifyInfo, notifyError } from "~/utils/notification";
 
 const editorStore = useEditorStore();
 const appStore = useAppStore();
+const { t } = useI18n();
 const fileInput = ref<HTMLInputElement | null>(null);
 
 // 缩放级别
@@ -391,7 +460,7 @@ const toggleSearch = () => {
   // 使用浏览器原生查找功能
   // 注意：现代浏览器通常不支持直接调用查找对话框
   // 这里可以提示用户使用 Ctrl+F
-  notifyInfo("请使用 Ctrl+F 或 Cmd+F 进行页面内搜索");
+  notifyInfo(t("notify.searchTip"));
 };
 
 // 打印文档
@@ -448,37 +517,43 @@ const insertHeading = (level: number) => {
 
 // 插入粗体
 const insertBold = () => {
-  editorStore.insertText("粗体文本", "**", "**");
+  editorStore.insertText(t("insert.boldText"), "**", "**");
 };
 
 // 插入斜体
 const insertItalic = () => {
-  editorStore.insertText("斜体文本", "*", "*");
+  editorStore.insertText(t("insert.italicText"), "*", "*");
 };
 
 // 插入删除线
 const insertStrike = () => {
-  editorStore.insertText("删除线文本", "~~", "~~");
+  editorStore.insertText(t("insert.strikethroughText"), "~~", "~~");
 };
 
 // 插入无序列表
 const insertUnorderedList = () => {
-  editorStore.insertText("\n- 列表项1\n- 列表项2\n- 列表项3");
+  editorStore.insertText(
+    `\n- ${t("insert.listItem")} 1\n- ${t("insert.listItem")} 2\n- ${t("insert.listItem")} 3`,
+  );
 };
 
 // 插入有序列表
 const insertOrderedList = () => {
-  editorStore.insertText("\n1. 列表项1\n2. 列表项2\n3. 列表项3");
+  editorStore.insertText(
+    `\n1. ${t("insert.listItem")} 1\n2. ${t("insert.listItem")} 2\n3. ${t("insert.listItem")} 3`,
+  );
 };
 
 // 插入任务列表
 const insertTaskList = () => {
-  editorStore.insertText("\n- [ ] 未完成任务\n- [x] 已完成任务");
+  editorStore.insertText(
+    `\n- [ ] ${t("insert.untitledTask")}\n- [x] ${t("insert.completedTask")}`,
+  );
 };
 
 // 插入引用
 const insertBlockquote = () => {
-  editorStore.insertText("\n> 引用内容");
+  editorStore.insertText(`\n> ${t("insert.quoteText")}`);
 };
 
 // 插入行内代码
@@ -488,28 +563,35 @@ const insertInlineCode = () => {
 
 // 插入代码块
 const insertCodeBlock = () => {
-  editorStore.insertText("\n```javascript\n// 代码内容\n```\n");
+  editorStore.insertText(
+    `\n\`\`\`javascript\n// ${t("insert.codeContent")}\n\`\`\`\n`,
+  );
 };
 
 // 插入链接
 const insertLink = () => {
-  editorStore.insertText("链接文本", "[", "](https://example.com)");
+  editorStore.insertText(t("insert.linkText"), "[", "](https://example.com)");
 };
 
 // 插入图片
 const insertImage = () => {
-  editorStore.insertText("图片描述", "![", "](https://example.com/image.png)");
+  editorStore.insertText(
+    t("insert.imageAlt"),
+    "![",
+    "](https://example.com/image.png)",
+  );
 };
 
 // 插入表格
 const insertTable = () => {
-  const table = `
-| 表头1 | 表头2 | 表头3 |
+  const header = t("insert.tableHeader");
+  const cell = t("insert.tableCell");
+  editorStore.insertText(`
+| ${header}1 | ${header}2 | ${header}3 |
 |-------|-------|-------|
-| 单元格 | 单元格 | 单元格 |
-| 单元格 | 单元格 | 单元格 |
-`;
-  editorStore.insertText(table);
+| ${cell} | ${cell} | ${cell} |
+| ${cell} | ${cell} | ${cell} |
+`);
 };
 
 // 插入分割线
@@ -532,7 +614,7 @@ const handleFileUpload = async (e: Event) => {
     await editorStore.addFile(file);
   } catch (error) {
     console.error("Failed to load file:", error);
-    notifyError("文件加载失败，请重试");
+    notifyError(t("notify.loadFailed"));
   }
 
   // 重置input

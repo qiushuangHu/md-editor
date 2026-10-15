@@ -27,10 +27,10 @@
           />
         </svg>
         <p class="text-xl font-semibold text-gray-700 dark:text-gray-200">
-          释放以打开文件
+          {{ t("drop.title") }}
         </p>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">
-          支持 .md, .txt, .markdown 格式
+          {{ t("drop.formats") }}
         </p>
       </div>
     </div>
@@ -63,7 +63,7 @@
                 />
               </svg>
               <h3 class="text-sm font-bold text-gray-800 dark:text-gray-200">
-                目录
+                {{ t("toc.title") }}
               </h3>
             </div>
             <nav class="space-y-1" ref="tocNavRef">
@@ -87,7 +87,7 @@
                 v-if="toc.length === 0"
                 class="text-sm text-gray-400 italic py-4 text-center"
               >
-                暂无目录
+                {{ t("toc.empty") }}
               </p>
             </nav>
           </div>
@@ -106,7 +106,7 @@
               @input="onInput"
               @scroll="onEditorScroll"
               @keydown="handleKeydown"
-              placeholder="在此输入Markdown内容..."
+              :placeholder="t('editor.placeholder')"
               spellcheck="false"
             ></textarea>
           </div>
@@ -141,9 +141,9 @@
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                <p class="text-lg">在左侧输入Markdown内容开始预览</p>
+                <p class="text-lg">{{ t("preview.empty") }}</p>
                 <p class="text-sm mt-2 opacity-75">
-                  支持实时预览、代码高亮、数学公式等功能
+                  {{ t("preview.features") }}
                 </p>
               </div>
             </div>
@@ -164,6 +164,7 @@ import type { PanelConfig } from "./ResizablePanels.vue";
 
 const appStore = useAppStore();
 const editorStore = useEditorStore();
+const { t } = useI18n();
 
 const editorRef = ref<HTMLTextAreaElement | null>(null);
 const previewRef = ref<HTMLElement | null>(null);
@@ -409,7 +410,7 @@ const handleDrop = async (e: DragEvent) => {
       const fileExt = "." + file.name.split(".").pop()?.toLowerCase();
 
       if (!allowedTypes.includes(fileExt)) {
-        notifyWarning(`不支持的文件格式: ${file.name}`);
+        notifyWarning(t("notify.unsupportedFormat", { name: file.name }));
         continue;
       }
 
@@ -417,7 +418,7 @@ const handleDrop = async (e: DragEvent) => {
     }
   } catch (error) {
     console.error("Failed to load files:", error);
-    notifyError("文件加载失败，请重试");
+    notifyError(t("notify.loadFailed"));
   }
 };
 

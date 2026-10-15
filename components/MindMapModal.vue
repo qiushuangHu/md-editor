@@ -35,7 +35,7 @@
               <h2
                 class="text-base font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent"
               >
-                思维导图
+                {{ t("mindmap.title") }}
               </h2>
             </div>
 
@@ -43,7 +43,7 @@
               <!-- 层级选择器 -->
               <div class="flex items-center gap-2">
                 <span class="text-xs text-gray-500 dark:text-gray-400">
-                  显示层级:
+                  {{ t("mindmap.levelLabel") }}
                 </span>
                 <div class="flex gap-1">
                   <button
@@ -65,7 +65,11 @@
               <div class="w-px h-5 bg-gray-200 dark:bg-gray-700"></div>
 
               <!-- 适配视图 -->
-              <button class="btn-icon" title="适配视图" @click="fitViewToNodes">
+              <button
+                class="btn-icon"
+                :title="t('mindmap.fitView')"
+                @click="fitViewToNodes"
+              >
                 <svg
                   class="w-4 h-4"
                   fill="none"
@@ -84,7 +88,7 @@
               <!-- 关闭按钮 -->
               <button
                 class="p-2 rounded-lg transition-all duration-200 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 active:scale-95"
-                title="关闭 (ESC)"
+                :title="t('mindmap.close')"
                 @click="handleClose"
               >
                 <svg
@@ -124,9 +128,9 @@
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                <p class="text-lg">暂无可解析的内容</p>
+                <p class="text-lg">{{ t("mindmap.empty") }}</p>
                 <p class="text-sm mt-2 opacity-75">
-                  请先打开或编辑含有标题结构的 Markdown 文件
+                  {{ t("mindmap.emptyHint") }}
                 </p>
               </div>
             </div>
@@ -184,6 +188,7 @@ const emit = defineEmits<{
   (e: "close"): void;
 }>();
 
+const { t } = useI18n();
 const currentLevel = ref(3);
 const vueFlowRef = ref<any>(null);
 
@@ -233,7 +238,7 @@ watch(
         setTimeout(() => fitViewToNodes(), 200);
       });
     }
-  }
+  },
 );
 
 const handleClose = () => {

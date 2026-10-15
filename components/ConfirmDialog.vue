@@ -73,11 +73,13 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n();
+
 const visible = ref(false);
-const title = ref("确认");
+const title = ref("");
 const message = ref("");
-const confirmText = ref("确认");
-const cancelText = ref("取消");
+const confirmText = ref("");
+const cancelText = ref("");
 
 let resolvePromise: ((value: boolean) => void) | null = null;
 
@@ -89,10 +91,10 @@ const show = (options: {
   cancelText?: string;
 }): Promise<boolean> => {
   return new Promise((resolve) => {
-    title.value = options.title || "确认";
+    title.value = options.title || t("common.confirm");
     message.value = options.message;
-    confirmText.value = options.confirmText || "确认";
-    cancelText.value = options.cancelText || "取消";
+    confirmText.value = options.confirmText || t("common.confirm");
+    cancelText.value = options.cancelText || t("common.cancel");
     resolvePromise = resolve;
     visible.value = true;
   });
