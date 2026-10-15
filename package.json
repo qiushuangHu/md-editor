@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.9.0",
+  "allowScripts": [
+    "esbuild",
+    "vue-demi",
+    "core-js",
+    "@parcel/watcher"
+  ],
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
