@@ -50,43 +50,4 @@ export function removeNotification(id: string) {
   }
 }
 
-// 便捷方法
-export function notifySuccess(
-  message: string,
-  title?: string,
-  duration?: number
-) {
-  addNotification({ type: "success", message, title, duration });
-}
-
-export function notifyError(
-  message: string,
-  title?: string,
-  duration?: number
-) {
-  addNotification({
-    type: "error",
-    message,
-    title,
-    duration: duration ?? 5000,
-  });
-}
-
-export function notifyWarning(
-  message: string,
-  title?: string,
-  duration?: number
-) {
-  addNotification({
-    type: "warning",
-    message,
-    title,
-    duration: duration ?? 4000,
-  });
-}
-
-export function notifyInfo(message: string, title?: string, duration?: number) {
-  addNotification({ type: "info", message, title, duration });
-}
-
 export { notifications };

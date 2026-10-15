@@ -11,6 +11,27 @@ export const generateHeadingId = (text: string, index: number = 0): string => {
   return index > 0 ? `${baseId}-${index}` : baseId;
 };
 
+// 将高亮后的 HTML 按行包裹为 .code-line，配合 CSS 计数器显示行号；
+// 跨行 token（如块注释）在行尾补闭合标签、下一行开头重开，保持标签配平
+export const wrapCodeLines = (html: string): string => {
+  // fence 内容末尾总带一个换行，去掉避免多出一个空行号
+  const lines = html.replace(/\n$/, "").split("\n");
+  const openSpans: string[] = [];
+
+  return lines
+    .map((line) => {
+      const prefix = openSpans.join("");
+      const tagPattern = /<span[^>]*>|<\/span>/g;
+      let match: RegExpExecArray | null;
+      while ((match = tagPattern.exec(line)) !== null) {
+        if (match[0] === "</span>") openSpans.pop();
+        else openSpans.push(match[0]);
+      }
+      return `<span class="code-line">${prefix}${line}${"</span>".repeat(openSpans.length)}</span>`;
+    })
+    .join("");
+};
+
 // 创建markdown-it实例
 export const createMarkdown = () => {
   const md = new MarkdownIt({
@@ -23,15 +44,19 @@ export const createMarkdown = () => {
         try {
           return (
             '<pre class="hljs"><code>' +
-            hljs.highlight(str, { language: lang, ignoreIllegals: true })
-              .value +
+            wrapCodeLines(
+              hljs.highlight(str, { language: lang, ignoreIllegals: true })
+                .value,
+            ) +
             "</code></pre>"
           );
         } catch (__) {}
       }
 
       return (
-        '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + "</code></pre>"
+        '<pre class="hljs"><code>' +
+        wrapCodeLines(md.utils.escapeHtml(str)) +
+        "</code></pre>"
       );
     },
   });
@@ -62,7 +87,7 @@ export const createMarkdown = () => {
         state.push("katex_inline", "", 0);
         state.tokens[state.tokens.length - 1].content = state.src.substring(
           start,
-          pos + 1
+          pos + 1,
         );
       }
     }
@@ -89,7 +114,7 @@ export const createMarkdown = () => {
         const contentEnd = state.eMarks[line];
         const lineContent = state.src.substr(
           contentStart,
-          contentEnd - contentStart
+          contentEnd - contentStart,
         );
 
         if (line === startLine) {
@@ -129,8 +154,19 @@ export const createMarkdown = () => {
 
       state.line = line;
       return true;
-    }
+    },
   );
+
+  // mermaid 代码块输出为占位容器，由客户端异步渲染为 SVG
+  const defaultFence = md.renderer.rules.fence;
+  md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+    const token = tokens[idx];
+    if (token.info.trim() === "mermaid") {
+      const source = md.utils.escapeHtml(token.content);
+      return `<div class="mermaid-block" data-source="${source}"><pre class="mermaid">${source}</pre></div>`;
+    }
+    return defaultFence!(tokens, idx, options, env, self);
+  };
 
   // 为标题添加id（处理重复标题）
   const headingCounter: Record<string, number> = {};

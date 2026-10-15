@@ -196,7 +196,7 @@
 <script setup lang="ts">
 import { useEditorStore } from "~/stores/editor";
 import { notifyWarning, notifyError } from "~/utils/notification";
-import { showConfirm } from "~/utils/confirm";
+import { showConfirm } from "~/composables/useConfirmDialog";
 
 const editorStore = useEditorStore();
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -327,7 +327,7 @@ const switchToFile = (fileId: string) => {
 const closeOtherTabs = () => {
   if (!contextMenuFileId.value) return;
   const filesToClose = editorStore.files.filter(
-    (f) => f.id !== contextMenuFileId.value
+    (f) => f.id !== contextMenuFileId.value,
   );
   filesToClose.forEach((file) => {
     if (!file.isDirty) {
@@ -373,7 +373,7 @@ onMounted(() => {
     () => editorStore.files.length,
     () => {
       nextTick(checkArrowsVisibility);
-    }
+    },
   );
 });
 

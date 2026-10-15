@@ -1,3 +1,25 @@
-node_modules
+# Nuxt 构建产物
 .nuxt
+.output
+.data
+dist
+
+# Node
+node_modules
+
+# pnpm 本地存储
 .pnpm-store
+
+# 日志
+logs
+*.log
+
+# 环境变量（保留模板文件）
+.env
+.env.*
+!.env.example
+
+# 编辑器与系统文件
+.idea
+.DS_Store
+Thumbs.db

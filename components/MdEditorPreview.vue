@@ -120,10 +120,10 @@
           ref="previewRef"
           @scroll="onPreviewScrollWithTracking"
         >
-          <div class="max-w-8xl mx-auto my-8 px-6">
+          <div class="max-w-8xl mx-auto my-6 px-4">
             <div
               v-if="htmlContent"
-              class="markdown-preview bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-200 dark:border-gray-700 p-8 min-w-fit"
+              class="markdown-preview bg-white dark:bg-gray-800 rounded-2xl shadow-soft border border-gray-200 dark:border-gray-700 p-5 md:p-7 min-w-fit"
               v-html="htmlContent"
             ></div>
             <div v-else class="flex items-center justify-center h-full">
@@ -158,6 +158,7 @@
 import { useAppStore } from "~/stores/app";
 import { useEditorStore } from "~/stores/editor";
 import { renderMarkdown, extractToc } from "~/utils/markdown";
+import { renderMermaidDiagrams, setupMermaidZoom } from "~/utils/mermaid";
 import { notifyWarning, notifyError } from "~/utils/notification";
 import type { PanelConfig } from "./ResizablePanels.vue";
 
@@ -324,7 +325,7 @@ const scrollToTocItem = (headingId: string) => {
 
   // 查找当前active的目录项
   const activeItem = tocNavRef.value?.querySelector(
-    `[data-heading-id="${headingId}"]`
+    `[data-heading-id="${headingId}"]`,
   );
   if (!activeItem) return;
 
@@ -420,6 +421,37 @@ const handleDrop = async (e: DragEvent) => {
   }
 };
 
+// mermaid 缩放工具栏：事件委托绑定在预览容器，卸载时解绑
+let teardownZoom: (() => void) | null = null;
+onMounted(() => {
+  if (previewRef.value) {
+    teardownZoom = setupMermaidZoom(previewRef.value);
+  }
+});
+onBeforeUnmount(() => {
+  teardownZoom?.();
+  teardownZoom = null;
+});
+
+// 渲染 mermaid 图表（客户端异步渲染，主题切换时重渲染）
+watch(
+  [htmlContent, () => appStore.theme],
+  async () => {
+    await nextTick();
+    const preview = previewRef.value;
+    if (!preview) return;
+    try {
+      await renderMermaidDiagrams(
+        preview,
+        appStore.isDark ? "dark" : "default",
+      );
+    } catch (error) {
+      console.error("Mermaid render failed:", error);
+    }
+  },
+  { immediate: true },
+);
+
 // 监听预览滚动，更新 active 状态
 const onPreviewScrollWithTracking = (e: Event) => {
   onPreviewScroll(e);
@@ -438,6 +470,6 @@ watch(
       // 渲染已完成，通过computed自动更新
     }, 100);
   },
-  { immediate: true }
+  { immediate: true },
 );
 </script>
